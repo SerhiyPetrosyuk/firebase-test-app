@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Shop List</string>
+    <string name="pager_title_shopping_lists">Shopping Lists</string>
+    <string name="pager_title_meals">Meals</string>
+
+    <string name="hint_title">Title</string>
+    <string name="button_create">Create</string>
+</resources>
