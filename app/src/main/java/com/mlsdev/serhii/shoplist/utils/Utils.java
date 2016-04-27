@@ -1,9 +1,13 @@
 package com.mlsdev.serhii.shoplist.utils;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 public class Utils {
 
@@ -12,6 +16,14 @@ public class Utils {
             InputMethodManager manager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
             manager.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
+    }
+
+    @SuppressLint("SimpleDateFormat")
+    public static String getFormattedDate(long time) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(time);
+        return dateFormat.format(calendar.getTime());
     }
 
 }

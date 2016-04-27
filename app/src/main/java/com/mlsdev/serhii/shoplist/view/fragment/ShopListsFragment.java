@@ -5,16 +5,17 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.mlsdev.serhii.shoplist.R;
 import com.mlsdev.serhii.shoplist.databinding.ShopListsFragmentBinding;
+import com.mlsdev.serhii.shoplist.viewmodel.ShopListsViewModel;
 
 public class ShopListsFragment extends BaseFragment {
-    public ShopListsFragmentBinding binding;
+    private ShopListsFragmentBinding binding;
+    private ShopListsViewModel viewModel;
 
     public static ShopListsFragment getNewInstance(Bundle args) {
         ShopListsFragment shopListsFragment = new ShopListsFragment();
@@ -26,6 +27,7 @@ public class ShopListsFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.shop_lists_fragment, container, false);
         binding = DataBindingUtil.bind(view);
+        viewModel = ShopListsViewModel.getNewInstance(getActivity());
         initList();
         return view;
     }
@@ -38,7 +40,6 @@ public class ShopListsFragment extends BaseFragment {
 
     @Override
     public void addItem(String title) {
-        // TODO: 25.04.16 add a new item
-        Log.d("Test", title);
+        viewModel.addNewShopList(title);
     }
 }
