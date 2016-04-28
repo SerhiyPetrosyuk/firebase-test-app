@@ -14,7 +14,7 @@ public class ItemDetailsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_item_details);
+        binding = DataBindingUtil.setContentView(this, R.layout.item_details);
     }
 
     @Override
