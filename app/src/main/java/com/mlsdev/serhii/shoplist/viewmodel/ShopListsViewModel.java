@@ -13,11 +13,13 @@ import com.mlsdev.serhii.shoplist.model.ShoppingList;
 import com.mlsdev.serhii.shoplist.utils.Utils;
 import com.mlsdev.serhii.shoplist.view.adapter.ShoppingListsAdapter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ShopListsViewModel extends BaseViewModel {
     public static final String CHILD = "activeList";
     private Context context;
     private ShoppingListsAdapter adapter;
-
 
     public static ShopListsViewModel getNewInstance(Context context, ShoppingListsAdapter adapter) {
         return new ShopListsViewModel(context, adapter);
@@ -38,19 +40,17 @@ public class ShopListsViewModel extends BaseViewModel {
         firebase.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String key) {
-                Log.d("FIREBASE", dataSnapshot.toString());
-                ShoppingList shoppingList = dataSnapshot.getValue(ShoppingList.class);
-                adapter.addItem(shoppingList);
+                adapter.addItem(dataSnapshot, key);
             }
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String key) {
-
+                adapter.onItemChanged(dataSnapshot);
             }
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
-
+                adapter.onItemRemoved(dataSnapshot.getKey());
             }
 
             @Override
