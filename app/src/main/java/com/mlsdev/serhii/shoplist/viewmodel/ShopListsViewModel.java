@@ -10,6 +10,7 @@ import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
 import com.mlsdev.serhii.shoplist.model.ShoppingList;
+import com.mlsdev.serhii.shoplist.utils.Constants;
 import com.mlsdev.serhii.shoplist.utils.Utils;
 import com.mlsdev.serhii.shoplist.view.adapter.ShoppingListsAdapter;
 
@@ -17,7 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ShopListsViewModel extends BaseViewModel {
-    public static final String CHILD = "activeList";
     private Context context;
     private ShoppingListsAdapter adapter;
 
@@ -32,11 +32,11 @@ public class ShopListsViewModel extends BaseViewModel {
     }
 
     public void addNewShopList(String title) {
-        getFirebase().child(CHILD).push().setValue(new ShoppingList("Anonymous owner", title));
+        getFirebase().child(Constants.ACTIVE_LISTS).push().setValue(new ShoppingList("Anonymous owner", title));
     }
 
     private void initFirebaseListener() {
-        Firebase firebase = getFirebase().child(CHILD);
+        Firebase firebase = getFirebase().child(Constants.ACTIVE_LISTS);
         firebase.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String key) {

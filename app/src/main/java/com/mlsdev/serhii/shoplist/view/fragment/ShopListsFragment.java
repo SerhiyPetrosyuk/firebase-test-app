@@ -1,5 +1,6 @@
 package com.mlsdev.serhii.shoplist.view.fragment;
 
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -12,10 +13,12 @@ import android.view.ViewGroup;
 import com.mlsdev.serhii.shoplist.R;
 import com.mlsdev.serhii.shoplist.databinding.ShopListsFragmentBinding;
 import com.mlsdev.serhii.shoplist.model.ShoppingList;
+import com.mlsdev.serhii.shoplist.utils.Constants;
+import com.mlsdev.serhii.shoplist.view.activity.ItemDetailsActivity;
 import com.mlsdev.serhii.shoplist.view.adapter.ShoppingListsAdapter;
 import com.mlsdev.serhii.shoplist.viewmodel.ShopListsViewModel;
 
-public class ShopListsFragment extends BaseFragment {
+public class ShopListsFragment extends BaseFragment implements ShoppingListsAdapter.OnItemClickListener {
     private ShopListsFragmentBinding binding;
     private ShopListsViewModel viewModel;
 
@@ -35,6 +38,7 @@ public class ShopListsFragment extends BaseFragment {
 
     private void initList() {
         ShoppingListsAdapter adapter = new ShoppingListsAdapter();
+        adapter.setOnItemClickListener(this);
         viewModel = ShopListsViewModel.getNewInstance(getActivity(), adapter);
         binding.rvShopLists.setAdapter(adapter);
         binding.rvShopLists.setHasFixedSize(true);
@@ -45,5 +49,12 @@ public class ShopListsFragment extends BaseFragment {
     @Override
     public void addItem(String title) {
         viewModel.addNewShopList(title);
+    }
+
+    @Override
+    public void onItemClicked(String listId) {
+        Intent intent = new Intent(getActivity(), ItemDetailsActivity.class);
+        intent.putExtra(Constants.KEY_LIST_ID, listId);
+        startActivity(intent);
     }
 }

@@ -7,4 +7,6 @@ public class Constants {
     public static final String EXTRA_NEW_ITEM_TITLE = "extra_new_item_title";
     public static final String FIREBASE_PROPERTY_TIMESTAMP_LAST_CHANGED = "dateLastChanged";
     public static final String KEY_LIST_NAME = "key_list_name";
+    public static final String KEY_LIST_ID = "key_list_id";
+    public static final String ACTIVE_LISTS = "active_lists";
 }

@@ -13,11 +13,9 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <android.support.v7.widget.Toolbar
+        <include
             android:id="@+id/toolbar"
-            style="@style/Toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize" />
+            layout="@layout/toolbar" />
 
         <android.support.design.widget.TabLayout
             android:id="@+id/tab_bar"
@@ -35,6 +33,6 @@
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab_add_item"
             style="@style/FloatingActionButton"
-            android:onClick="@{viewModel.onAddItemButtomClicked}"/>
+            android:onClick="@{viewModel.onAddItemButtomClicked}" />
     </RelativeLayout>
 </layout>

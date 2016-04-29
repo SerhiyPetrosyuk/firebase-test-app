@@ -15,8 +15,9 @@ import com.mlsdev.serhii.shoplist.viewmodel.ShoppingListViewModel;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ShoppingListsAdapter extends RecyclerView.Adapter<ShoppingListsAdapter.ViewHolder>{
+public class ShoppingListsAdapter extends RecyclerView.Adapter<ShoppingListsAdapter.ViewHolder> {
     private List<DataSnapshot> dataSnapshots = new ArrayList<>();
+    private OnItemClickListener onItemClickListener;
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -77,11 +78,27 @@ public class ShoppingListsAdapter extends RecyclerView.Adapter<ShoppingListsAdap
         throw new IllegalArgumentException("Key not found");
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private ListItemBinding binding;
+
         public ViewHolder(View itemView) {
             super(itemView);
             binding = DataBindingUtil.bind(itemView);
+            itemView.setOnClickListener(this);
         }
+
+        @Override
+        public void onClick(View v) {
+            if (onItemClickListener != null)
+                onItemClickListener.onItemClicked(dataSnapshots.get(getAdapterPosition()).getKey());
+        }
+    }
+
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+        this.onItemClickListener = onItemClickListener;
+    }
+
+    public interface OnItemClickListener {
+        void onItemClicked(String key);
     }
 }
