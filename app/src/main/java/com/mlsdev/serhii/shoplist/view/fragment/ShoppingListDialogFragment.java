@@ -20,12 +20,14 @@ import com.mlsdev.serhii.shoplist.R;
 import com.mlsdev.serhii.shoplist.databinding.DialogFragmentBinding;
 import com.mlsdev.serhii.shoplist.utils.Constants;
 
-public class AddItemDialogFragment extends DialogFragment {
+public class ShoppingListDialogFragment extends DialogFragment {
     public final static int REQUEST_CODE = 0;
     private DialogFragmentBinding binding;
+    private int dialogType = Constants.CREATING;
+    private OnCompleteListener onCompleteListener;
 
-    public static AddItemDialogFragment getNewInstance(Bundle args) {
-        AddItemDialogFragment dialogFragment = new AddItemDialogFragment();
+    public static ShoppingListDialogFragment getNewInstance(Bundle args) {
+        ShoppingListDialogFragment dialogFragment = new ShoppingListDialogFragment();
         dialogFragment.setArguments(args);
         return dialogFragment;
     }
@@ -41,6 +43,7 @@ public class AddItemDialogFragment extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        dialogType = getArguments().getInt(Constants.EXTRA_DIALOG_TYPE);
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.CustomTheme_Dialog);
         LayoutInflater inflater = getActivity().getLayoutInflater();
         @SuppressLint("InflateParams") View rootView = inflater.inflate(R.layout.dialog_fragment, null);
@@ -49,27 +52,54 @@ public class AddItemDialogFragment extends DialogFragment {
             @Override
             public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
                 if (actionId == KeyEvent.ACTION_DOWN || actionId == EditorInfo.IME_ACTION_DONE) {
-                    onCreateClicked();
-                    AddItemDialogFragment.this.dismiss();
+                    onComplete();
+                    ShoppingListDialogFragment.this.dismiss();
                 }
                 return true;
             }
         });
 
+        String positiveButtonLabel = dialogType == Constants.CREATING
+                ? getString(R.string.button_create)
+                : getString(R.string.button_edit);
+
         builder.setView(rootView)
-                .setPositiveButton(getString(R.string.button_create), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        onCreateClicked();
-                    }
-                });
+                .setPositiveButton(positiveButtonLabel,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                onComplete();
+                            }
+                        });
+
+        if (dialogType == Constants.EDITING)
+            builder.setNegativeButton(getString(android.R.string.cancel),
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dismiss();
+                        }
+                    });
 
         return builder.create();
     }
 
-    private void onCreateClicked() {
-        Intent resultData = new Intent();
-        resultData.putExtra(Constants.EXTRA_NEW_ITEM_TITLE, binding.etItemTitle.getText().toString());
-        getTargetFragment().onActivityResult(REQUEST_CODE, Activity.RESULT_OK, resultData);
+    private void onComplete() {
+        if (getTargetFragment() == null) {
+            onCompleteListener.onComplete(binding.etItemTitle.getText().toString());
+        } else {
+            Intent resultData = new Intent();
+            resultData.putExtra(Constants.EXTRA_LIST_ITEM_TITLE, binding.etItemTitle.getText().toString());
+            getTargetFragment().onActivityResult(REQUEST_CODE, Activity.RESULT_OK, resultData);
+        }
     }
+
+    public void setOnCompleteListener(OnCompleteListener onCompleteListener) {
+        this.onCompleteListener = onCompleteListener;
+    }
+
+    public interface OnCompleteListener {
+        void onComplete(String title);
+    }
+
 }

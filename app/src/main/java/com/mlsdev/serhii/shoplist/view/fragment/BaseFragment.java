@@ -14,8 +14,8 @@ public abstract class BaseFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == AddItemDialogFragment.REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            String title = data.getStringExtra(Constants.EXTRA_NEW_ITEM_TITLE);
+        if (requestCode == ShoppingListDialogFragment.REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            String title = data.getStringExtra(Constants.EXTRA_LIST_ITEM_TITLE);
             addItem(title);
         }
     }

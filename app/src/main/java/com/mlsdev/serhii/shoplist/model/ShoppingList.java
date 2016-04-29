@@ -43,6 +43,22 @@ public class ShoppingList {
         return dateCreated;
     }
 
+    public void setOwner(String owner) {
+        this.owner = owner;
+    }
+
+    public void setListName(String listName) {
+        this.listName = listName;
+    }
+
+    public void setDateCreated(Map<String, Object> dateCreated) {
+        this.dateCreated = dateCreated;
+    }
+
+    public void setDateLastChanged(Map<String, Object> dateLastChanged) {
+        this.dateLastChanged = dateLastChanged;
+    }
+
     @JsonIgnore
     public long getDateLastChangedLong() {
         return (long) dateLastChanged.get(DATE_KEY);
