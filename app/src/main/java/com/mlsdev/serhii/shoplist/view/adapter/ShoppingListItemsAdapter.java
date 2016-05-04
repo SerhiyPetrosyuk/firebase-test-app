@@ -25,7 +25,8 @@ public class ShoppingListItemsAdapter extends BaseShoppingListAdapter<ShoppingLi
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         ShoppingListItem shoppingListItem = dataSnapshots.get(position).getValue(ShoppingListItem.class);
-        holder.binding.setViewModel(new ShoppingListItemViewModel(shoppingListItem.getTitle()));
+        shoppingListItem.setParentKey(dataSnapshots.get(position).getKey());
+        holder.binding.setViewModel(new ShoppingListItemViewModel(shoppingListItem));
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {

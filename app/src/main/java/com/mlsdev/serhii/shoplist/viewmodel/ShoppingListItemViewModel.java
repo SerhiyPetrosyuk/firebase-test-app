@@ -3,6 +3,7 @@ package com.mlsdev.serhii.shoplist.viewmodel;
 import android.databinding.ObservableField;
 import android.view.View;
 
+import com.mlsdev.serhii.shoplist.model.ShoppingListItem;
 import com.mlsdev.serhii.shoplist.view.adapter.BaseShoppingListAdapter;
 
 /**
@@ -16,8 +17,8 @@ public class ShoppingListItemViewModel extends BaseViewModel {
         title = new ObservableField<>();
     }
 
-    public ShoppingListItemViewModel(String title) {
-        this.title = new ObservableField<>(title);
+    public ShoppingListItemViewModel(ShoppingListItem shoppingListItem) {
+        this.title = new ObservableField<>(shoppingListItem.getTitle());
     }
 
     public void onRemoveItemClicked(View view) {

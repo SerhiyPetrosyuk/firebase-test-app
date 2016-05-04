@@ -6,6 +6,7 @@ package com.mlsdev.serhii.shoplist.model;
 public class ShoppingListItem {
     private String title;
     private String owner;
+    private String parentKey;
 
     public ShoppingListItem() {
     }
@@ -22,11 +23,19 @@ public class ShoppingListItem {
         return owner;
     }
 
+    public String getParentKey() {
+        return parentKey;
+    }
+
     public void setTitle(String title) {
         this.title = title;
     }
 
     public void setOwner(String owner) {
         this.owner = owner;
+    }
+
+    public void setParentKey(String parentKey) {
+        this.parentKey = parentKey;
     }
 }
