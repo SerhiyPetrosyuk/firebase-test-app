@@ -3,17 +3,20 @@ package com.mlsdev.serhii.shoplist.view.activity;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.mlsdev.serhii.shoplist.R;
 import com.mlsdev.serhii.shoplist.databinding.ItemDetailsBinding;
 import com.mlsdev.serhii.shoplist.utils.Constants;
+import com.mlsdev.serhii.shoplist.view.adapter.ShoppingListItemsAdapter;
 import com.mlsdev.serhii.shoplist.view.fragment.ShoppingListDialogFragment;
 import com.mlsdev.serhii.shoplist.viewmodel.ShoppingListViewModel;
 
 public class ItemDetailsActivity extends BaseActivity implements ShoppingListDialogFragment.OnCompleteListener,
-        ShoppingListViewModel.OnShoppingListRemovedListener{
+        ShoppingListViewModel.OnShoppingListRemovedListener {
     private ItemDetailsBinding binding;
     private ShoppingListViewModel viewModel;
 
@@ -22,9 +25,10 @@ public class ItemDetailsActivity extends BaseActivity implements ShoppingListDia
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.item_details);
         initToolBar(true);
-        viewModel = new ShoppingListViewModel(getIntent());
+        viewModel = new ShoppingListViewModel(this, getIntent(), this);
         viewModel.setOnShoppingListRemovedListener(this);
         binding.setViewModel(viewModel);
+        initRecyclerView();
     }
 
     @Override
@@ -56,9 +60,13 @@ public class ItemDetailsActivity extends BaseActivity implements ShoppingListDia
     @Override
     public void onComplete(Bundle resultData) {
         int dialogType = resultData.getInt(Constants.EXTRA_DIALOG_TYPE);
-        if (dialogType == Constants.DIALOG_TYPE_EDITING) {
+        if (dialogType == Constants.DIALOG_TYPE_EDITING || dialogType == Constants.DIALOG_TYPE_CREATING) {
             String title = resultData.getString(Constants.EXTRA_LIST_ITEM_TITLE);
-            viewModel.onEditListTitle(title);
+
+            if (dialogType == Constants.DIALOG_TYPE_EDITING)
+                viewModel.onEditListItem(title);
+            else
+                viewModel.onCreateNewListItem(title);
         } else {
             viewModel.removeShoppingList();
         }
@@ -70,6 +78,15 @@ public class ItemDetailsActivity extends BaseActivity implements ShoppingListDia
         ShoppingListDialogFragment dialog = ShoppingListDialogFragment.getNewInstance(args);
         dialog.setOnCompleteListener(this);
         dialog.show(getSupportFragmentManager(), ShoppingListDialogFragment.class.getSimpleName());
+    }
+
+    private void initRecyclerView() {
+        ShoppingListItemsAdapter adapter = new ShoppingListItemsAdapter();
+        binding.rvListItems.setLayoutManager(new LinearLayoutManager(this));
+        binding.rvListItems.setHasFixedSize(true);
+        binding.rvListItems.setItemAnimator(new DefaultItemAnimator());
+        binding.rvListItems.setAdapter(adapter);
+        viewModel.setAdapter(adapter);
     }
 
     @Override

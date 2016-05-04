@@ -34,5 +34,11 @@
             android:id="@+id/fab_add_item"
             style="@style/FloatingActionButton"
             android:onClick="@{viewModel.onAddItemButtomClicked}" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="6dp"
+            android:layout_below="@id/tab_bar"
+            android:background="@drawable/bottom_shadow" />
     </RelativeLayout>
 </layout>

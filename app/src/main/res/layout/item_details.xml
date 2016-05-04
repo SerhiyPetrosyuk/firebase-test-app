@@ -17,49 +17,77 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="@dimen/activity_horizontal_margin">
+            android:layout_height="match_parent">
 
-            <android.support.v7.widget.AppCompatTextView
-                android:id="@+id/tv_list_title"
+            <RelativeLayout
+                android:id="@+id/rl_list_details"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@{viewModel.listName}"
-                android:textSize="22sp" />
+                android:padding="@dimen/activity_horizontal_margin">
 
-            <android.support.v7.widget.AppCompatTextView
-                android:id="@+id/tv_created_by_label"
+                <android.support.v7.widget.AppCompatTextView
+                    android:id="@+id/tv_list_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@{viewModel.listName}"
+                    android:textSize="22sp" />
+
+                <android.support.v7.widget.AppCompatTextView
+                    android:id="@+id/tv_created_by_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/tv_list_title"
+                    android:text="@string/created_by_label" />
+
+                <android.support.v7.widget.AppCompatTextView
+                    android:id="@+id/tv_owner_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/tv_list_title"
+                    android:layout_toEndOf="@id/tv_created_by_label"
+                    android:layout_toRightOf="@id/tv_created_by_label"
+                    android:text="@{viewModel.ownerName}" />
+
+                <android.support.v7.widget.AppCompatTextView
+                    android:id="@+id/tv_last_edited_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/tv_created_by_label"
+                    android:layout_toLeftOf="@+id/tv_last_edited_date"
+                    android:layout_toStartOf="@id/tv_last_edited_date"
+                    android:text="@string/last_changed_label" />
+
+                <android.support.v7.widget.AppCompatTextView
+                    android:id="@id/tv_last_edited_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_below="@id/tv_created_by_label"
+                    android:text="@{viewModel.dateLastEditedDate}" />
+            </RelativeLayout>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rv_list_items"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@id/rl_list_details" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="6dp"
+                android:layout_below="@id/rl_list_details"
+                android:background="@drawable/bottom_shadow" />
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/fab_add_item"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/tv_list_title"
-                android:text="@string/created_by_label" />
-
-            <android.support.v7.widget.AppCompatTextView
-                android:id="@+id/tv_owner_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/tv_list_title"
-                android:layout_toEndOf="@id/tv_created_by_label"
-                android:layout_toRightOf="@id/tv_created_by_label"
-                android:text="@{viewModel.ownerName}" />
-
-            <android.support.v7.widget.AppCompatTextView
-                android:id="@+id/tv_last_edited_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/tv_created_by_label"
-                android:layout_toLeftOf="@+id/tv_last_edited_date"
-                android:layout_toStartOf="@id/tv_last_edited_date"
-                android:text="@string/last_changed_label" />
-
-            <android.support.v7.widget.AppCompatTextView
-                android:id="@id/tv_last_edited_date"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
                 android:layout_alignParentRight="true"
-                android:layout_below="@id/tv_created_by_label"
-                android:text="@{viewModel.dateLastEditedDate}" />
+                android:layout_margin="@dimen/activity_horizontal_margin"
+                android:onClick="@{viewModel.onAddNewItemClicked}"
+                android:src="@mipmap/ic_add" />
         </RelativeLayout>
 
     </LinearLayout>

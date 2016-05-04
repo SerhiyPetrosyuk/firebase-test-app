@@ -1,21 +1,13 @@
 package com.mlsdev.serhii.shoplist.viewmodel;
 
 import android.content.Context;
-import android.databinding.ObservableField;
-import android.util.Log;
 
-import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
-import com.firebase.client.FirebaseError;
-import com.firebase.client.ValueEventListener;
 import com.mlsdev.serhii.shoplist.model.ShoppingList;
+import com.mlsdev.serhii.shoplist.model.listeners.ShoppingListChildEventListener;
 import com.mlsdev.serhii.shoplist.utils.Constants;
-import com.mlsdev.serhii.shoplist.utils.Utils;
 import com.mlsdev.serhii.shoplist.view.adapter.ShoppingListsAdapter;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class ShopListsViewModel extends BaseViewModel {
     private Context context;
@@ -37,7 +29,7 @@ public class ShopListsViewModel extends BaseViewModel {
 
     private void initFirebaseListener() {
         Firebase firebase = getFirebase().child(Constants.ACTIVE_LISTS);
-        firebase.addChildEventListener(new ChildEventListener() {
+        firebase.addChildEventListener(new ShoppingListChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String key) {
                 adapter.addItem(dataSnapshot, key);
@@ -53,15 +45,6 @@ public class ShopListsViewModel extends BaseViewModel {
                 adapter.onItemRemoved(dataSnapshot.getKey());
             }
 
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String key) {
-
-            }
-
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {
-
-            }
         });
     }
 

@@ -9,6 +9,7 @@ public class Constants {
     public static final String KEY_LIST_NAME = "key_list_name";
     public static final String KEY_LIST_ID = "key_list_id";
     public static final String ACTIVE_LISTS = "active_lists";
+    public static final String ACTIVE_LIST_ITEMS = "active_list_items";
     public static final int DIALOG_TYPE_CREATING = 0;
     public static final int DIALOG_TYPE_EDITING = 1;
     public static final int DIALOG_TYPE_REMOVE = 2;
