@@ -62,6 +62,7 @@ public class ShoppingListViewModel extends BaseViewModel {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.getValue() == null && onShoppingListRemovedListener != null) {
+                    removeBoundItems();
                     onShoppingListRemovedListener.onShoppingListRemoved();
                     return;
                 }
@@ -106,6 +107,10 @@ public class ShoppingListViewModel extends BaseViewModel {
 
     public void removeShoppingList() {
         getFirebase().child(Constants.ACTIVE_LISTS).child(key).removeValue();
+    }
+
+    public void removeBoundItems() {
+        getFirebase().child(Constants.ACTIVE_LIST_ITEMS).child(key).removeValue();
     }
 
     public void setAdapter(BaseShoppingListAdapter adapter) {
