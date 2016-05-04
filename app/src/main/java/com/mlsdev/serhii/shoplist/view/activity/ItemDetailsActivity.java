@@ -3,18 +3,17 @@ package com.mlsdev.serhii.shoplist.view.activity;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.mlsdev.serhii.shoplist.R;
-import com.mlsdev.serhii.shoplist.databinding.ActivityItemDetailsBinding;
 import com.mlsdev.serhii.shoplist.databinding.ItemDetailsBinding;
 import com.mlsdev.serhii.shoplist.utils.Constants;
 import com.mlsdev.serhii.shoplist.view.fragment.ShoppingListDialogFragment;
 import com.mlsdev.serhii.shoplist.viewmodel.ShoppingListViewModel;
 
-public class ItemDetailsActivity extends BaseActivity implements ShoppingListDialogFragment.OnCompleteListener {
+public class ItemDetailsActivity extends BaseActivity implements ShoppingListDialogFragment.OnCompleteListener,
+        ShoppingListViewModel.OnShoppingListRemovedListener{
     private ItemDetailsBinding binding;
     private ShoppingListViewModel viewModel;
 
@@ -24,6 +23,7 @@ public class ItemDetailsActivity extends BaseActivity implements ShoppingListDia
         binding = DataBindingUtil.setContentView(this, R.layout.item_details);
         initToolBar(true);
         viewModel = new ShoppingListViewModel(getIntent());
+        viewModel.setOnShoppingListRemovedListener(this);
         binding.setViewModel(viewModel);
     }
 
@@ -43,11 +43,10 @@ public class ItemDetailsActivity extends BaseActivity implements ShoppingListDia
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.edit_menu_item:
-                Bundle args = new Bundle();
-                args.putInt(Constants.EXTRA_DIALOG_TYPE, Constants.EDITING);
-                ShoppingListDialogFragment dialog = ShoppingListDialogFragment.getNewInstance(args);
-                dialog.setOnCompleteListener(this);
-                dialog.show(getSupportFragmentManager(), ShoppingListDialogFragment.class.getSimpleName());
+                createDialog(Constants.DIALOG_TYPE_EDITING);
+                return true;
+            case R.id.remove_menu_item:
+                createDialog(Constants.DIALOG_TYPE_REMOVE);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -55,7 +54,26 @@ public class ItemDetailsActivity extends BaseActivity implements ShoppingListDia
     }
 
     @Override
-    public void onComplete(String title) {
-        viewModel.onEditListTitle(title);
+    public void onComplete(Bundle resultData) {
+        int dialogType = resultData.getInt(Constants.EXTRA_DIALOG_TYPE);
+        if (dialogType == Constants.DIALOG_TYPE_EDITING) {
+            String title = resultData.getString(Constants.EXTRA_LIST_ITEM_TITLE);
+            viewModel.onEditListTitle(title);
+        } else {
+            viewModel.removeShoppingList();
+        }
+    }
+
+    private void createDialog(int dialogType) {
+        Bundle args = new Bundle();
+        args.putInt(Constants.EXTRA_DIALOG_TYPE, dialogType);
+        ShoppingListDialogFragment dialog = ShoppingListDialogFragment.getNewInstance(args);
+        dialog.setOnCompleteListener(this);
+        dialog.show(getSupportFragmentManager(), ShoppingListDialogFragment.class.getSimpleName());
+    }
+
+    @Override
+    public void onShoppingListRemoved() {
+        finish();
     }
 }

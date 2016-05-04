@@ -14,6 +14,7 @@
         android:padding="@dimen/activity_horizontal_margin">
 
         <android.support.design.widget.TextInputLayout
+            android:id="@+id/til_title_editing"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/hint_title">
@@ -21,11 +22,20 @@
             <android.support.design.widget.TextInputEditText
                 android:id="@+id/et_item_title"
                 android:layout_width="match_parent"
-                android:textColor="@color/cardview_dark_background"
                 android:layout_height="wrap_content"
+                android:inputType="textCapSentences"
                 android:maxLines="1"
-                android:inputType="textCapSentences"/>
+                android:textColor="@color/cardview_dark_background" />
         </android.support.design.widget.TextInputLayout>
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/tv_message_remove"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/message_removing"
+            android:textSize="18sp"
+            android:visibility="gone" />
 
     </LinearLayout>
 </layout>

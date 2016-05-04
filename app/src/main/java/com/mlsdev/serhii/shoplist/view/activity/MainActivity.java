@@ -11,6 +11,7 @@ import android.view.View;
 
 import com.mlsdev.serhii.shoplist.R;
 import com.mlsdev.serhii.shoplist.databinding.ActivityMainBinding;
+import com.mlsdev.serhii.shoplist.utils.Constants;
 import com.mlsdev.serhii.shoplist.view.fragment.ShoppingListDialogFragment;
 import com.mlsdev.serhii.shoplist.view.fragment.MealListsFragment;
 import com.mlsdev.serhii.shoplist.view.fragment.ShopListsFragment;
@@ -79,7 +80,9 @@ public class MainActivity extends AppCompatActivity {
     public class ViewModel extends BaseObservable {
 
         public void onAddItemButtomClicked(View view) {
-            ShoppingListDialogFragment dialogFragment = ShoppingListDialogFragment.getNewInstance(null);
+            Bundle args = new Bundle();
+            args.putInt(Constants.EXTRA_DIALOG_TYPE, Constants.DIALOG_TYPE_CREATING);
+            ShoppingListDialogFragment dialogFragment = ShoppingListDialogFragment.getNewInstance(args);
             dialogFragment.setTargetFragment(
                     binding.pager.getCurrentItem() == SHOP_LISTS_FRAGMENT ? shopListsFragment : mealListsFragment,
                     ShoppingListDialogFragment.REQUEST_CODE);

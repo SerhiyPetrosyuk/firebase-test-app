@@ -9,4 +9,7 @@
     <string name="created_by_label">created by&#160;</string>
     <string name="last_changed_label">last changed at&#160;</string>
     <string name="edit_menu_item_label">Edit</string>
+    <string name="remove_menu_item">remove</string>
+    <string name="message_removing">Are you sure you want to remove this list?</string>
+    <string name="dialog_title_remove">Remove shopping list</string>
 </resources>

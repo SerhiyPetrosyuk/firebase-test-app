@@ -21,6 +21,7 @@ public class ShoppingListViewModel extends BaseViewModel {
     private Intent initData;
     private String key;
     private ShoppingList shoppingList;
+    private OnShoppingListRemovedListener onShoppingListRemovedListener;
 
 
     public ShoppingListViewModel(Intent initData) {
@@ -44,6 +45,11 @@ public class ShoppingListViewModel extends BaseViewModel {
         getFirebase().child(Constants.ACTIVE_LISTS).child(key).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.getValue() == null && onShoppingListRemovedListener != null) {
+                    onShoppingListRemovedListener.onShoppingListRemoved();
+                    return;
+                }
+
                 shoppingList = dataSnapshot.getValue(ShoppingList.class);
                 listName.set(shoppingList.getListName());
                 ownerName.set(shoppingList.getOwner());
@@ -63,6 +69,18 @@ public class ShoppingListViewModel extends BaseViewModel {
         shoppingList.setListName(newTitle);
         shoppingList.setDateLastChanged(dateLastChanged);
         getFirebase().child(Constants.ACTIVE_LISTS).child(key).setValue(shoppingList);
+    }
+
+    public void removeShoppingList() {
+        getFirebase().child(Constants.ACTIVE_LISTS).child(key).removeValue();
+    }
+
+    public interface OnShoppingListRemovedListener {
+        void onShoppingListRemoved();
+    }
+
+    public void setOnShoppingListRemovedListener(OnShoppingListRemovedListener onShoppingListRemovedListener) {
+        this.onShoppingListRemovedListener = onShoppingListRemovedListener;
     }
 
 }

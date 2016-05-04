@@ -23,7 +23,7 @@ import com.mlsdev.serhii.shoplist.utils.Constants;
 public class ShoppingListDialogFragment extends DialogFragment {
     public final static int REQUEST_CODE = 0;
     private DialogFragmentBinding binding;
-    private int dialogType = Constants.CREATING;
+    private int dialogType = Constants.DIALOG_TYPE_CREATING;
     private OnCompleteListener onCompleteListener;
 
     public static ShoppingListDialogFragment getNewInstance(Bundle args) {
@@ -38,7 +38,8 @@ public class ShoppingListDialogFragment extends DialogFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+        if (dialogType != Constants.DIALOG_TYPE_REMOVE)
+            showKeyboard();
     }
 
     @Override
@@ -48,20 +49,30 @@ public class ShoppingListDialogFragment extends DialogFragment {
         LayoutInflater inflater = getActivity().getLayoutInflater();
         @SuppressLint("InflateParams") View rootView = inflater.inflate(R.layout.dialog_fragment, null);
         binding = DataBindingUtil.bind(rootView);
-        binding.etItemTitle.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
-                if (actionId == KeyEvent.ACTION_DOWN || actionId == EditorInfo.IME_ACTION_DONE) {
-                    onComplete();
-                    ShoppingListDialogFragment.this.dismiss();
-                }
-                return true;
-            }
-        });
+        String positiveButtonLabel;
 
-        String positiveButtonLabel = dialogType == Constants.CREATING
-                ? getString(R.string.button_create)
-                : getString(R.string.button_edit);
+        if (dialogType != Constants.DIALOG_TYPE_REMOVE) {
+            binding.etItemTitle.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                @Override
+                public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
+                    if (actionId == KeyEvent.ACTION_DOWN || actionId == EditorInfo.IME_ACTION_DONE) {
+                        onComplete();
+                        ShoppingListDialogFragment.this.dismiss();
+                    }
+                    return true;
+                }
+            });
+
+            positiveButtonLabel = dialogType == Constants.DIALOG_TYPE_CREATING
+                    ? getString(R.string.button_create)
+                    : getString(R.string.button_edit);
+
+        } else {
+            builder.setTitle(getString(R.string.dialog_title_remove));
+            binding.tilTitleEditing.setVisibility(View.GONE);
+            binding.tvMessageRemove.setVisibility(View.VISIBLE);
+            positiveButtonLabel = getString(android.R.string.ok);
+        }
 
         builder.setView(rootView)
                 .setPositiveButton(positiveButtonLabel,
@@ -72,7 +83,7 @@ public class ShoppingListDialogFragment extends DialogFragment {
                             }
                         });
 
-        if (dialogType == Constants.EDITING)
+        if (dialogType == Constants.DIALOG_TYPE_EDITING || dialogType == Constants.DIALOG_TYPE_REMOVE)
             builder.setNegativeButton(getString(android.R.string.cancel),
                     new DialogInterface.OnClickListener() {
                         @Override
@@ -86,7 +97,10 @@ public class ShoppingListDialogFragment extends DialogFragment {
 
     private void onComplete() {
         if (getTargetFragment() == null) {
-            onCompleteListener.onComplete(binding.etItemTitle.getText().toString());
+            Bundle resultData = new Bundle();
+            resultData.putString(Constants.EXTRA_LIST_ITEM_TITLE, binding.etItemTitle.getText().toString());
+            resultData.putInt(Constants.EXTRA_DIALOG_TYPE, dialogType);
+            onCompleteListener.onComplete(resultData);
         } else {
             Intent resultData = new Intent();
             resultData.putExtra(Constants.EXTRA_LIST_ITEM_TITLE, binding.etItemTitle.getText().toString());
@@ -98,8 +112,12 @@ public class ShoppingListDialogFragment extends DialogFragment {
         this.onCompleteListener = onCompleteListener;
     }
 
+    public void showKeyboard() {
+        getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+    }
+
     public interface OnCompleteListener {
-        void onComplete(String title);
+        void onComplete(Bundle resultData);
     }
 
 }
