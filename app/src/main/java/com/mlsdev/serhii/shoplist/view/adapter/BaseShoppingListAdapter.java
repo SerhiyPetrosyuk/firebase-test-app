@@ -15,6 +15,7 @@ import static android.support.v7.widget.RecyclerView.*;
 public abstract class BaseShoppingListAdapter<T extends ViewHolder> extends RecyclerView.Adapter<T> {
     protected List<DataSnapshot> dataSnapshots = new ArrayList<>();
     protected OnItemClickListener onItemClickListener;
+    protected String parentKey;
 
     @Override
     public int getItemCount() {
@@ -68,5 +69,13 @@ public abstract class BaseShoppingListAdapter<T extends ViewHolder> extends Recy
 
     public interface OnItemClickListener {
         void onItemClicked(String key);
+    }
+
+    public void setParentKey(String parentKey) {
+        this.parentKey = parentKey;
+    }
+
+    public String getParentKey() {
+        return parentKey;
     }
 }

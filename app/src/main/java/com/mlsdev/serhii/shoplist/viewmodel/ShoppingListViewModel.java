@@ -1,6 +1,5 @@
 package com.mlsdev.serhii.shoplist.viewmodel;
 
-import android.content.Intent;
 import android.databinding.ObservableField;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -26,7 +25,6 @@ public class ShoppingListViewModel extends BaseViewModel {
     public final ObservableField<String> listName;
     public final ObservableField<String> ownerName;
     public final ObservableField<String> dateLastEditedDate;
-    private Intent initData;
     private String key;
     private ShoppingList shoppingList;
     private OnShoppingListRemovedListener onShoppingListRemovedListener;
@@ -35,14 +33,14 @@ public class ShoppingListViewModel extends BaseViewModel {
     private ShoppingListChildEventListener itemsChildEventListener;
     private BaseShoppingListAdapter adapter;
 
-    public ShoppingListViewModel(AppCompatActivity activity, Intent initData,
+    public ShoppingListViewModel(AppCompatActivity activity, Bundle initData,
                                  ShoppingListDialogFragment.OnCompleteListener onCompleteListener) {
-        this.initData = initData;
         this.activity = activity;
         this.onCompleteListener = onCompleteListener;
         listName = new ObservableField<>();
         ownerName = new ObservableField<>();
         dateLastEditedDate = new ObservableField<>();
+        key = initData.getString(Constants.KEY_LIST_ID);
     }
 
     public ShoppingListViewModel(ShoppingList shoppingList) {
@@ -52,9 +50,11 @@ public class ShoppingListViewModel extends BaseViewModel {
     }
 
     public void onStart() {
-        key = initData.getStringExtra(Constants.KEY_LIST_ID);
+
         if (key == null)
             return;
+        else
+            adapter.setParentKey(key);
 
         initFirebaseListeners();
 
@@ -131,6 +131,11 @@ public class ShoppingListViewModel extends BaseViewModel {
             public void onChildAdded(DataSnapshot dataSnapshot, String prevKey) {
                 adapter.addItem(dataSnapshot, prevKey);
                 onEditListItem(null);
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                adapter.onItemRemoved(dataSnapshot.getKey());
             }
         };
     }

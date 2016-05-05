@@ -4,7 +4,7 @@
 
         <variable
             name="viewModel"
-            type="com.mlsdev.serhii.shoplist.viewmodel.ShoppingListItemViewModel" />
+            type="com.mlsdev.serhii.shoplist.view.adapter.ShoppingListItemsAdapter.ShoppingListItemViewModel" />
     </data>
 
     <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
@@ -35,10 +35,10 @@
                 android:layout_width="45dp"
                 android:layout_height="45dp"
                 android:background="@android:color/transparent"
-                android:src="@mipmap/ic_delete"
+                android:onClick="@{viewModel.onRemoveItemClicked}"
                 android:padding="6dp"
                 android:scaleType="centerInside"
-                android:onClick="@{viewModel.onRemoveItemClicked}"/>
+                android:src="@mipmap/ic_delete" />
 
         </LinearLayout>
 

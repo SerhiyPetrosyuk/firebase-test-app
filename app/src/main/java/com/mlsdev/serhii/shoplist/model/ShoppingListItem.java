@@ -4,9 +4,9 @@ package com.mlsdev.serhii.shoplist.model;
  * Created by serhii on 5/4/16.
  */
 public class ShoppingListItem {
+    private String key;
     private String title;
     private String owner;
-    private String parentKey;
 
     public ShoppingListItem() {
     }
@@ -23,8 +23,8 @@ public class ShoppingListItem {
         return owner;
     }
 
-    public String getParentKey() {
-        return parentKey;
+    public String getKey() {
+        return key;
     }
 
     public void setTitle(String title) {
@@ -35,7 +35,7 @@ public class ShoppingListItem {
         this.owner = owner;
     }
 
-    public void setParentKey(String parentKey) {
-        this.parentKey = parentKey;
+    public void setKey(String key) {
+        this.key = key;
     }
 }

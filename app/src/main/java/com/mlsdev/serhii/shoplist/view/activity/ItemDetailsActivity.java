@@ -23,9 +23,10 @@ public class ItemDetailsActivity extends BaseActivity implements ShoppingListDia
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Bundle args = getIntent().getExtras();
         binding = DataBindingUtil.setContentView(this, R.layout.item_details);
         initToolBar(true);
-        viewModel = new ShoppingListViewModel(this, getIntent(), this);
+        viewModel = new ShoppingListViewModel(this, args, this);
         viewModel.setOnShoppingListRemovedListener(this);
         binding.setViewModel(viewModel);
         initRecyclerView();
