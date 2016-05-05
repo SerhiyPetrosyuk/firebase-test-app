@@ -30,11 +30,6 @@ public class ShopListsFragment extends BaseFragment implements ShoppingListsAdap
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.shop_lists_fragment, container, false);
         binding = DataBindingUtil.bind(view);
@@ -62,5 +57,11 @@ public class ShopListsFragment extends BaseFragment implements ShoppingListsAdap
         Intent intent = new Intent(getActivity(), ItemDetailsActivity.class);
         intent.putExtra(Constants.KEY_LIST_ID, listId);
         startActivity(intent);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
     }
 }

@@ -13,11 +13,11 @@ public abstract class BaseFragment extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == ShoppingListDialogFragment.REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             String title = data.getStringExtra(Constants.EXTRA_LIST_ITEM_TITLE);
             addItem(title);
         }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     public abstract void addItem(String title);

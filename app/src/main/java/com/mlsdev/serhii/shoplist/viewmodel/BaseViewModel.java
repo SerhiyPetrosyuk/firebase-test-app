@@ -9,4 +9,8 @@ public abstract class BaseViewModel {
         return new Firebase(Constants.FIREBASE_URL);
     }
 
+    public void onDestroy() {
+
+    }
+
 }

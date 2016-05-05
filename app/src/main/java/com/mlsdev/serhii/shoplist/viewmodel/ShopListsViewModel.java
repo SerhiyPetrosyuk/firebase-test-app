@@ -12,6 +12,7 @@ import com.mlsdev.serhii.shoplist.view.adapter.ShoppingListsAdapter;
 public class ShopListsViewModel extends BaseViewModel {
     private Context context;
     private ShoppingListsAdapter adapter;
+    private ShoppingListChildEventListener shoppingListChildEventListener;
 
     public static ShopListsViewModel getNewInstance(Context context, ShoppingListsAdapter adapter) {
         return new ShopListsViewModel(context, adapter);
@@ -29,7 +30,7 @@ public class ShopListsViewModel extends BaseViewModel {
 
     private void initFirebaseListener() {
         Firebase firebase = getFirebase().child(Constants.ACTIVE_LISTS);
-        firebase.addChildEventListener(new ShoppingListChildEventListener() {
+        shoppingListChildEventListener = new ShoppingListChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String key) {
                 adapter.addItem(dataSnapshot, key);
@@ -45,7 +46,14 @@ public class ShopListsViewModel extends BaseViewModel {
                 adapter.onItemRemoved(dataSnapshot.getKey());
             }
 
-        });
+        };
+
+        firebase.addChildEventListener(shoppingListChildEventListener);
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        getFirebase().removeEventListener(shoppingListChildEventListener);
+    }
 }
