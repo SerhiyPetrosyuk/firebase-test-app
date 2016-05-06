@@ -32,6 +32,7 @@ public class ShoppingListViewModel extends BaseViewModel {
     private AppCompatActivity activity;
     private ShoppingListChildEventListener itemsChildEventListener;
     private BaseShoppingListAdapter adapter;
+    private ShoppingListDialogFragment dialogFragment;
 
     public ShoppingListViewModel(AppCompatActivity activity, Bundle initData,
                                  ShoppingListDialogFragment.OnCompleteListener onCompleteListener) {
@@ -41,6 +42,7 @@ public class ShoppingListViewModel extends BaseViewModel {
         ownerName = new ObservableField<>();
         dateLastEditedDate = new ObservableField<>();
         key = initData.getString(Constants.KEY_LIST_ID);
+        initDialogFragment();
     }
 
     public ShoppingListViewModel(ShoppingList shoppingList) {
@@ -97,12 +99,15 @@ public class ShoppingListViewModel extends BaseViewModel {
         getFirebase().child(Constants.ACTIVE_LIST_ITEMS).child(key).push().setValue(shoppingListItem);
     }
 
-    public void onAddNewItemClicked(View view) {
+    private void initDialogFragment() {
         Bundle args = new Bundle();
         args.putInt(Constants.EXTRA_DIALOG_TYPE, Constants.DIALOG_TYPE_CREATING);
-        ShoppingListDialogFragment dialog = ShoppingListDialogFragment.getNewInstance(args);
-        dialog.setOnCompleteListener(onCompleteListener);
-        dialog.show(activity.getSupportFragmentManager(), ShoppingListDialogFragment.class.getSimpleName());
+        dialogFragment = ShoppingListDialogFragment.getNewInstance(args);
+        dialogFragment.setOnCompleteListener(onCompleteListener);
+    }
+
+    public void onAddNewItemClicked(View view) {
+        dialogFragment.show(activity.getSupportFragmentManager(), ShoppingListDialogFragment.class.getSimpleName());
     }
 
     public void removeShoppingList() {
