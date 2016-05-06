@@ -146,8 +146,9 @@ public class ShoppingListViewModel extends BaseViewModel {
         };
     }
 
+
     @Override
-    public void onDestroy() {
+    public void onStop() {
         getFirebase().removeEventListener(itemsChildEventListener);
         getFirebase().removeEventListener(valueEventListener);
     }

@@ -39,6 +39,12 @@ public class ItemDetailsActivity extends BaseActivity implements ShoppingListDia
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+        viewModel.onStop();
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.item_details_menu, menu);
         return true;
