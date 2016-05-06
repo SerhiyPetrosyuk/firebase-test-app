@@ -13,5 +13,7 @@ public class Constants {
     public static final int DIALOG_TYPE_CREATING = 0;
     public static final int DIALOG_TYPE_EDITING = 1;
     public static final int DIALOG_TYPE_REMOVE = 2;
+    public static final int DIALOG_TYPE_EDITING_ITEM = 3;
+    public static final int DIALOG_TYPE_REMOVE_ITEM = 4;
     public static final String EXTRA_DIALOG_TYPE = "extra_dialog_type";
 }

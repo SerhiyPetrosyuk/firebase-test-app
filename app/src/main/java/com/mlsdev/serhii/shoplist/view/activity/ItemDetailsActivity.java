@@ -66,29 +66,20 @@ public class ItemDetailsActivity extends BaseActivity implements ShoppingListDia
 
     @Override
     public void onComplete(Bundle resultData) {
-        int dialogType = resultData.getInt(Constants.EXTRA_DIALOG_TYPE);
-        if (dialogType == Constants.DIALOG_TYPE_EDITING || dialogType == Constants.DIALOG_TYPE_CREATING) {
-            String title = resultData.getString(Constants.EXTRA_LIST_ITEM_TITLE);
-
-            if (dialogType == Constants.DIALOG_TYPE_EDITING)
-                viewModel.onEditListItem(title);
-            else
-                viewModel.onCreateNewListItem(title);
-        } else {
-            viewModel.removeShoppingList();
-        }
+        viewModel.onComplete(resultData);
     }
 
     private void createDialog(int dialogType) {
         Bundle args = new Bundle();
         args.putInt(Constants.EXTRA_DIALOG_TYPE, dialogType);
+        args.putString(Constants.EXTRA_LIST_ITEM_TITLE, binding.tvListTitle.getText().toString());
         ShoppingListDialogFragment dialog = ShoppingListDialogFragment.getNewInstance(args);
         dialog.setOnCompleteListener(this);
         dialog.show(getSupportFragmentManager(), ShoppingListDialogFragment.class.getSimpleName());
     }
 
     private void initRecyclerView() {
-        ShoppingListItemsAdapter adapter = new ShoppingListItemsAdapter();
+        ShoppingListItemsAdapter adapter = new ShoppingListItemsAdapter(this);
         binding.rvListItems.setLayoutManager(new LinearLayoutManager(this));
         binding.rvListItems.setHasFixedSize(true);
         binding.rvListItems.setItemAnimator(new DefaultItemAnimator());

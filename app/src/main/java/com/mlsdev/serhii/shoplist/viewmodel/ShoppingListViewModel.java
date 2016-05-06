@@ -143,13 +143,39 @@ public class ShoppingListViewModel extends BaseViewModel {
             public void onChildRemoved(DataSnapshot dataSnapshot) {
                 adapter.onItemRemoved(dataSnapshot.getKey());
             }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String key) {
+                adapter.onItemChanged(dataSnapshot);
+            }
         };
     }
-
 
     @Override
     public void onStop() {
         getFirebase().removeEventListener(itemsChildEventListener);
         getFirebase().removeEventListener(valueEventListener);
     }
+
+    @Override
+    public void onComplete(Bundle resultData) {
+
+        int dialogType = resultData.getInt(Constants.EXTRA_DIALOG_TYPE);
+
+        String title = resultData.getString(Constants.EXTRA_LIST_ITEM_TITLE);
+        switch (dialogType) {
+            case Constants.DIALOG_TYPE_CREATING:
+                onCreateNewListItem(title);
+                break;
+            case Constants.DIALOG_TYPE_EDITING:
+                onEditListItem(title);
+                break;
+            case Constants.DIALOG_TYPE_REMOVE:
+                removeShoppingList();
+                break;
+            default:
+                break;
+        }
+    }
+
 }

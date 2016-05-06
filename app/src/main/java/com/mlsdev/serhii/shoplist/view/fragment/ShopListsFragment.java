@@ -7,13 +7,11 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.mlsdev.serhii.shoplist.R;
 import com.mlsdev.serhii.shoplist.databinding.ShopListsFragmentBinding;
-import com.mlsdev.serhii.shoplist.model.ShoppingList;
 import com.mlsdev.serhii.shoplist.utils.Constants;
 import com.mlsdev.serhii.shoplist.view.activity.ItemDetailsActivity;
 import com.mlsdev.serhii.shoplist.view.adapter.ShoppingListsAdapter;

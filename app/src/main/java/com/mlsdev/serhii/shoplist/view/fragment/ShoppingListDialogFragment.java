@@ -38,20 +38,23 @@ public class ShoppingListDialogFragment extends DialogFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        if (dialogType != Constants.DIALOG_TYPE_REMOVE)
+        if (dialogType != Constants.DIALOG_TYPE_REMOVE && dialogType != Constants.DIALOG_TYPE_REMOVE_ITEM)
             showKeyboard();
     }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         dialogType = getArguments().getInt(Constants.EXTRA_DIALOG_TYPE);
+        String editingData = getArguments().getString(Constants.EXTRA_LIST_ITEM_TITLE, "");
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.CustomTheme_Dialog);
         LayoutInflater inflater = getActivity().getLayoutInflater();
         @SuppressLint("InflateParams") View rootView = inflater.inflate(R.layout.dialog_fragment, null);
         binding = DataBindingUtil.bind(rootView);
         String positiveButtonLabel;
 
-        if (dialogType != Constants.DIALOG_TYPE_REMOVE) {
+        if (dialogType != Constants.DIALOG_TYPE_REMOVE && dialogType != Constants.DIALOG_TYPE_REMOVE_ITEM) {
+            binding.etItemTitle.setText(editingData);
+            binding.etItemTitle.setSelection(editingData.length());
             binding.etItemTitle.setOnEditorActionListener(new TextView.OnEditorActionListener() {
                 @Override
                 public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
@@ -68,7 +71,6 @@ public class ShoppingListDialogFragment extends DialogFragment {
                     : getString(R.string.button_edit);
 
         } else {
-            builder.setTitle(getString(R.string.dialog_title_remove));
             binding.tilTitleEditing.setVisibility(View.GONE);
             binding.tvMessageRemove.setVisibility(View.VISIBLE);
             positiveButtonLabel = getString(android.R.string.ok);
@@ -83,14 +85,13 @@ public class ShoppingListDialogFragment extends DialogFragment {
                             }
                         });
 
-        if (dialogType == Constants.DIALOG_TYPE_EDITING || dialogType == Constants.DIALOG_TYPE_REMOVE)
-            builder.setNegativeButton(getString(android.R.string.cancel),
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dismiss();
-                        }
-                    });
+        builder.setNegativeButton(getString(android.R.string.cancel),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dismiss();
+                    }
+                });
 
         return builder.create();
     }
