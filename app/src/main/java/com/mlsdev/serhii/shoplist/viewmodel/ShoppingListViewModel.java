@@ -31,6 +31,7 @@ public class ShoppingListViewModel extends BaseViewModel {
     private ShoppingListDialogFragment.OnCompleteListener onCompleteListener;
     private AppCompatActivity activity;
     private ShoppingListChildEventListener itemsChildEventListener;
+    private ValueEventListener valueEventListener;
     private BaseShoppingListAdapter adapter;
     private ShoppingListDialogFragment dialogFragment;
 
@@ -59,28 +60,7 @@ public class ShoppingListViewModel extends BaseViewModel {
             adapter.setParentKey(key);
 
         initFirebaseListeners();
-
-        getFirebase().child(Constants.ACTIVE_LISTS).child(key).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.getValue() == null && onShoppingListRemovedListener != null) {
-                    removeBoundItems();
-                    onShoppingListRemovedListener.onShoppingListRemoved();
-                    return;
-                }
-
-                shoppingList = dataSnapshot.getValue(ShoppingList.class);
-                listName.set(shoppingList.getListName());
-                ownerName.set(shoppingList.getOwner());
-                dateLastEditedDate.set(Utils.getFormattedDate(shoppingList.getDateLastChangedLong()));
-            }
-
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {
-
-            }
-        });
-
+        getFirebase().child(Constants.ACTIVE_LISTS).child(key).addValueEventListener(valueEventListener);
         getFirebase().child(Constants.ACTIVE_LIST_ITEMS).child(key).addChildEventListener(itemsChildEventListener);
     }
 
@@ -131,6 +111,27 @@ public class ShoppingListViewModel extends BaseViewModel {
     }
 
     private void initFirebaseListeners() {
+        valueEventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.getValue() == null && onShoppingListRemovedListener != null) {
+                    removeBoundItems();
+                    onShoppingListRemovedListener.onShoppingListRemoved();
+                    return;
+                }
+
+                shoppingList = dataSnapshot.getValue(ShoppingList.class);
+                listName.set(shoppingList.getListName());
+                ownerName.set(shoppingList.getOwner());
+                dateLastEditedDate.set(Utils.getFormattedDate(shoppingList.getDateLastChangedLong()));
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        };
+
         itemsChildEventListener = new ShoppingListChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String prevKey) {
@@ -145,4 +146,9 @@ public class ShoppingListViewModel extends BaseViewModel {
         };
     }
 
+    @Override
+    public void onDestroy() {
+        getFirebase().removeEventListener(itemsChildEventListener);
+        getFirebase().removeEventListener(valueEventListener);
+    }
 }

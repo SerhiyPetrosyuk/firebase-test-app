@@ -62,6 +62,6 @@ public class ShopListsFragment extends BaseFragment implements ShoppingListsAdap
     @Override
     public void onDestroy() {
         super.onDestroy();
-
+        viewModel.onDestroy();
     }
 }
