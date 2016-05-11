@@ -5,42 +5,35 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.mlsdev.serhii.shoplist.R;
-import com.mlsdev.serhii.shoplist.databinding.ActivityCreateAccountBinding;
+import com.mlsdev.serhii.shoplist.databinding.ActivitySignInBinding;
 import com.mlsdev.serhii.shoplist.view.listener.EditTextWatcher;
 import com.mlsdev.serhii.shoplist.viewmodel.AccountViewModel;
 
-public class CreateAccountActivity extends BaseActivity implements IAuthenticationView {
-    private ActivityCreateAccountBinding binding;
+public class SignInActivity extends AppCompatActivity implements IAuthenticationView {
+    private ActivitySignInBinding binding;
     private AccountViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_sign_in);
         viewModel = new AccountViewModel(this);
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_create_account);
         binding.setViewModel(viewModel);
-        initToolBar(false);
-        setTitle(getString(R.string.title_create_account));
         EditTextWatcher textWatcher = new EditTextWatcher(viewModel, null, binding.etUserEmail,
                 binding.etUserPassword);
-        binding.etUserName.addTextChangedListener(textWatcher);
         binding.etUserEmail.addTextChangedListener(textWatcher);
         binding.etUserPassword.addTextChangedListener(textWatcher);
     }
 
     @Override
-    protected void onDestroy() {
-        viewModel.onDestroy();
-        super.onDestroy();
-    }
-
-    @Override
     public void showEmailError(String errorMessage) {
+        binding.tilUserEmail.setErrorEnabled(true);
         binding.tilUserEmail.setError(errorMessage);
     }
 
     @Override
     public void showPasswordError(String errorMessage) {
+        binding.tilUserPassword.setErrorEnabled(true);
         binding.tilUserPassword.setError(errorMessage);
     }
 

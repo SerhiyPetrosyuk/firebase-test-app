@@ -15,6 +15,10 @@ public abstract class BaseViewModel {
 
     }
 
+    public void onStart() {
+
+    }
+
     public void onStop() {
 
     }
