@@ -40,13 +40,11 @@ public class AccountViewModel extends BaseViewModel {
     }
 
     public void onCreateButtonClicked(View view) {
-        // TODO: 5/10/16 create a Firebase account
         authenticationView.hideKeyboard();
         getFirebase().createUser(userEmail.get(), userPassword.get(), resultHandler);
     }
 
     public void onSignUpButtonClicked(View view) {
-        // TODO: 5/11/16 sign in a user
         authenticationView.hideKeyboard();
         getFirebase().authWithPassword(userEmail.get(), userPassword.get(), authResultHandler);
     }
