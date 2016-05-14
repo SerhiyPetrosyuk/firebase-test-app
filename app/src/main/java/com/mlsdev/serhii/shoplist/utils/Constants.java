@@ -16,4 +16,6 @@ public class Constants {
     public static final int DIALOG_TYPE_EDITING_ITEM = 3;
     public static final int DIALOG_TYPE_REMOVE_ITEM = 4;
     public static final String EXTRA_DIALOG_TYPE = "extra_dialog_type";
+    public static final String SESSION_TOKEN_KEY = "session_token";
+    public static final String SESSION_EXPIRES_KEY = "session_expires";
 }

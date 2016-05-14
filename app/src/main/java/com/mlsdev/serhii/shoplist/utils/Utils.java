@@ -6,8 +6,12 @@ import android.content.Context;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 public class Utils {
 
@@ -24,6 +28,10 @@ public class Utils {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(time);
         return dateFormat.format(calendar.getTime());
+    }
+
+    public static long getCurrentDateTime() {
+        return System.currentTimeMillis();
     }
 
 }

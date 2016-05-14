@@ -19,7 +19,8 @@
             android:configChanges="orientation|keyboard|keyboardHidden|screenSize"
             android:label="" />
         <activity android:name=".view.activity.CreateAccountActivity" />
-        <activity android:name=".view.activity.SignInActivity">
+        <activity android:name=".view.activity.SignInActivity" />
+        <activity android:name=".view.activity.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

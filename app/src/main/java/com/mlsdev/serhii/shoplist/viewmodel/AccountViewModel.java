@@ -9,6 +9,7 @@ import android.view.View;
 import com.firebase.client.AuthData;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
+import com.mlsdev.serhii.shoplist.model.UserSession;
 import com.mlsdev.serhii.shoplist.view.activity.CreateAccountActivity;
 import com.mlsdev.serhii.shoplist.view.activity.IAuthenticationView;
 import com.mlsdev.serhii.shoplist.view.activity.MainActivity;
@@ -40,11 +41,13 @@ public class AccountViewModel extends BaseViewModel {
 
     public void onCreateButtonClicked(View view) {
         // TODO: 5/10/16 create a Firebase account
+        authenticationView.hideKeyboard();
         getFirebase().createUser(userEmail.get(), userPassword.get(), resultHandler);
     }
 
     public void onSignUpButtonClicked(View view) {
         // TODO: 5/11/16 sign in a user
+        authenticationView.hideKeyboard();
         getFirebase().authWithPassword(userEmail.get(), userPassword.get(), authResultHandler);
     }
 
@@ -76,10 +79,11 @@ public class AccountViewModel extends BaseViewModel {
         authResultHandler = new Firebase.AuthResultHandler() {
             @Override
             public void onAuthenticated(AuthData authData) {
-                Log.d("FIREBASE_AUTH", authData.getProviderData().toString());
                 authenticationView.getViewActivity().startActivity(
                         new Intent(authenticationView.getViewActivity(), MainActivity.class));
                 authenticationView.getViewActivity().finish();
+                UserSession.getInstance().openSession(authenticationView.getViewActivity(),
+                        authData.getToken(), authData.getExpires());
             }
 
             @Override
@@ -92,7 +96,7 @@ public class AccountViewModel extends BaseViewModel {
     private void handleErrors(FirebaseError firebaseError) {
         switch (firebaseError.getCode()) {
             case FirebaseError.USER_DOES_NOT_EXIST:
-
+                authenticationView.showMessage(null, firebaseError.getMessage());
                 break;
             case FirebaseError.INVALID_EMAIL:
                 authenticationView.showEmailError(firebaseError.getMessage());

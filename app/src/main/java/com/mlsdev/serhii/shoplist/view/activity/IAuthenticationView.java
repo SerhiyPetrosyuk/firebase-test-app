@@ -11,6 +11,10 @@ public interface IAuthenticationView {
 
     void showPasswordError(String errorMessage);
 
+    void showMessage(String title, String message);
+
     AppCompatActivity getViewActivity();
+
+    void hideKeyboard();
 
 }
