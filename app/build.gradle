@@ -45,6 +45,9 @@ dependencies {
     compile 'com.google.firebase:firebase-core:9.0.2'
     compile 'com.google.firebase:firebase-auth:9.0.2'
     compile 'com.google.firebase:firebase-database:9.0.2'
+
+    // gson
+    compile 'com.google.code.gson:gson:2.6.2'
 }
 
 apply plugin: 'com.google.gms.google-services'

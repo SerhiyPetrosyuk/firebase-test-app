@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -24,6 +23,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.mlsdev.serhii.shoplist.R;
+import com.mlsdev.serhii.shoplist.model.User;
 import com.mlsdev.serhii.shoplist.model.UserSession;
 import com.mlsdev.serhii.shoplist.utils.Utils;
 import com.mlsdev.serhii.shoplist.view.activity.CreateAccountActivity;
@@ -31,6 +31,8 @@ import com.mlsdev.serhii.shoplist.view.activity.GoogleClientActivity;
 import com.mlsdev.serhii.shoplist.view.activity.IAuthenticationView;
 import com.mlsdev.serhii.shoplist.view.activity.MainActivity;
 import com.mlsdev.serhii.shoplist.view.activity.SignInActivity;
+
+import static com.mlsdev.serhii.shoplist.utils.Constants.USER;
 
 /**
  * Created by serhii on 5/10/16.
@@ -49,6 +51,7 @@ public class AccountViewModel extends BaseViewModel implements GoogleApiClient.O
     private OnCompleteListener<AuthResult> onCompleteListener;
 
     public AccountViewModel(IAuthenticationView authenticationView) {
+        super();
         this.authenticationView = authenticationView;
         auth = FirebaseAuth.getInstance();
         userName = new ObservableField<>("");
@@ -108,6 +111,8 @@ public class AccountViewModel extends BaseViewModel implements GoogleApiClient.O
     }
 
     public void onCreateButtonClicked(View view) {
+        User user = new User(userEmail.get(), userName.get(), Utils.getCurrentDateTime());
+        UserSession.getInstance().saveUserData(authenticationView.getViewActivity(), user.toJson());
         authenticationView.hideKeyboard();
         auth.createUserWithEmailAndPassword(userEmail.get(), userPassword.get())
                 .addOnCompleteListener(onCompleteListener);
@@ -123,10 +128,13 @@ public class AccountViewModel extends BaseViewModel implements GoogleApiClient.O
         signIn();
     }
 
-    private void signInWithGoogleAccount(String oAuthToken) {
-        Log.d(TAG, "firebaseAuthWithGoogle: " + oAuthToken);
+    private void signInWithGoogleAccount(GoogleSignInAccount account) {
+        Log.d(TAG, "firebaseAuthWithGoogle: " + account.getIdToken());
 
-        AuthCredential authCredential = GoogleAuthProvider.getCredential(oAuthToken, null);
+        User user = new User(account.getEmail(), account.getDisplayName(), Utils.getCurrentDateTime());
+        UserSession.getInstance().saveUserData(authenticationView.getViewActivity(), user.toJson());
+
+        AuthCredential authCredential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
         auth.signInWithCredential(authCredential).addOnCompleteListener(onCompleteListener);
     }
 
@@ -147,12 +155,17 @@ public class AccountViewModel extends BaseViewModel implements GoogleApiClient.O
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (!task.isSuccessful()) {
-                    Toast.makeText(authenticationView.getViewActivity(),
-                            "Authentication failed.", Toast.LENGTH_SHORT).show();
+                    authenticationView.showMessage(null, task.getException().getMessage());
                 } else {
-                    FirebaseUser user = task.getResult().getUser();
+                    User user = UserSession.getInstance().getUser(authenticationView.getViewActivity());
+
+                    if (user != null) {
+                        databaseReference.child(USER).child(Utils.encodeEmail(user.getEmail())).setValue(user);
+                    }
+
+                    FirebaseUser firebaseUser = task.getResult().getUser();
                     UserSession.getInstance().openSession(authenticationView.getViewActivity(),
-                            user.getUid(), Utils.getCurrentDateTime());
+                            firebaseUser.getUid(), Utils.getCurrentDateTime());
                     authenticationView.getViewActivity().startActivity(
                             new Intent(authenticationView.getViewActivity(), MainActivity.class));
                     authenticationView.getViewActivity().finish();
@@ -208,10 +221,9 @@ public class AccountViewModel extends BaseViewModel implements GoogleApiClient.O
         if (signInResult.isSuccess()) {
             Log.d(GoogleClientActivity.TAG, "A user has been authenticated");
             signInAccount = signInResult.getSignInAccount();
-            if (signInAccount != null) {
-                String token = signInAccount.getIdToken();
-                signInWithGoogleAccount(token);
-            }
+
+            if (signInAccount != null) signInWithGoogleAccount(signInAccount);
+
         } else {
             // TODO: 5/30/16 handle an error
             Log.d(GoogleClientActivity.TAG, "A user hasn't been authenticated");

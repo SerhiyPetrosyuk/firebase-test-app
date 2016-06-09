@@ -22,7 +22,7 @@ public class CreateAccountActivity extends GoogleClientActivity implements IAuth
         binding.setViewModel(viewModel);
         initToolBar(false);
         setTitle(getString(R.string.title_create_account));
-        EditTextWatcher textWatcher = new EditTextWatcher(viewModel, null, binding.etUserEmail,
+        EditTextWatcher textWatcher = new EditTextWatcher(viewModel, binding.etUserName, binding.etUserEmail,
                 binding.etUserPassword);
         binding.etUserName.addTextChangedListener(textWatcher);
         binding.etUserEmail.addTextChangedListener(textWatcher);

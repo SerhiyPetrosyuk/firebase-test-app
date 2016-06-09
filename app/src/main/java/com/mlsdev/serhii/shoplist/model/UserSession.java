@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import com.google.gson.Gson;
 import com.mlsdev.serhii.shoplist.utils.Constants;
 import com.mlsdev.serhii.shoplist.utils.Utils;
 
@@ -41,5 +42,18 @@ public class UserSession {
         editor.putLong(Constants.SESSION_EXPIRES_KEY, expires);
         this.expires = expires;
         editor.apply();
+    }
+
+    public void saveUserData(Context context, String json) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(Constants.USER_MODEL_KEY, json).apply();
+    }
+
+    public User getUser(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        String userJson = sharedPreferences.getString(Constants.USER_MODEL_KEY, null);
+        Gson gson = new Gson();
+        return gson.fromJson(userJson, User.class);
     }
 }

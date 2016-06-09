@@ -1,8 +1,10 @@
 package com.mlsdev.serhii.shoplist.view.activity;
 
+import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.Menu;
@@ -15,7 +17,8 @@ import com.mlsdev.serhii.shoplist.view.adapter.ShoppingListItemsAdapter;
 import com.mlsdev.serhii.shoplist.view.fragment.ShoppingListDialogFragment;
 import com.mlsdev.serhii.shoplist.viewmodel.ShoppingListViewModel;
 
-public class ItemDetailsActivity extends BaseActivity implements ShoppingListDialogFragment.OnCompleteListener,
+public class ItemDetailsActivity extends BaseActivity implements IShopListsView,
+        ShoppingListDialogFragment.OnCompleteListener,
         ShoppingListViewModel.OnShoppingListRemovedListener {
     private ItemDetailsBinding binding;
     private ShoppingListViewModel viewModel;
@@ -90,5 +93,21 @@ public class ItemDetailsActivity extends BaseActivity implements ShoppingListDia
     @Override
     public void onShoppingListRemoved() {
         finish();
+    }
+
+    @Override
+    public void setTitle(String title) {
+        if (getSupportActionBar() != null)
+            getSupportActionBar().setTitle(title);
+    }
+
+    @Override
+    public Context getViewContext() {
+        return this;
+    }
+
+    @Override
+    public AppCompatActivity getViewActivity() {
+        return this;
     }
 }

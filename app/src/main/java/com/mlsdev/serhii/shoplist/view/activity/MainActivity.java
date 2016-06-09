@@ -5,20 +5,18 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.mlsdev.serhii.shoplist.R;
 import com.mlsdev.serhii.shoplist.databinding.ActivityMainBinding;
 import com.mlsdev.serhii.shoplist.utils.Constants;
 import com.mlsdev.serhii.shoplist.view.fragment.BaseFragment;
-import com.mlsdev.serhii.shoplist.view.fragment.ShoppingListDialogFragment;
 import com.mlsdev.serhii.shoplist.view.fragment.MealListsFragment;
 import com.mlsdev.serhii.shoplist.view.fragment.ShopListsFragment;
+import com.mlsdev.serhii.shoplist.view.fragment.ShoppingListDialogFragment;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
     public static final int SHOP_LISTS_FRAGMENT = 0;
     public static final int MEAL_LISTS_FRAGMENT = 1;
     private ActivityMainBinding binding;
@@ -30,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         binding.setViewModel(new ViewModel());
         initViewPager();
+        initToolBar(false);
     }
 
     private void initViewPager() {

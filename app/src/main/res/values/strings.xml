@@ -23,4 +23,6 @@
     <string name="btn_sign_up">Sign Up</string>
     <string name="sign_in_label">Already have an account?</string>
     <string name="sign_up_label">Don\'t have an account?</string>
+
+    <string name="users_list_title">%1$s\'s&#160; lists</string>
 </resources>

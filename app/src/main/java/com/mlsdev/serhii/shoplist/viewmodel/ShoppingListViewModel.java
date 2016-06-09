@@ -3,7 +3,6 @@ package com.mlsdev.serhii.shoplist.viewmodel;
 import android.databinding.ObservableField;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.google.firebase.database.DataSnapshot;
@@ -11,9 +10,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 import com.mlsdev.serhii.shoplist.model.ShoppingList;
 import com.mlsdev.serhii.shoplist.model.ShoppingListItem;
+import com.mlsdev.serhii.shoplist.model.User;
+import com.mlsdev.serhii.shoplist.model.UserSession;
 import com.mlsdev.serhii.shoplist.model.listeners.ShoppingListChildEventListener;
 import com.mlsdev.serhii.shoplist.utils.Constants;
 import com.mlsdev.serhii.shoplist.utils.Utils;
+import com.mlsdev.serhii.shoplist.view.activity.IShopListsView;
 import com.mlsdev.serhii.shoplist.view.adapter.BaseShoppingListAdapter;
 import com.mlsdev.serhii.shoplist.view.fragment.ShoppingListDialogFragment;
 
@@ -21,27 +23,29 @@ public class ShoppingListViewModel extends BaseViewModel {
     public final ObservableField<String> listName;
     public final ObservableField<String> ownerName;
     public final ObservableField<String> dateLastEditedDate;
+    private IShopListsView view;
     private String key;
     private ShoppingList shoppingList;
     private OnShoppingListRemovedListener onShoppingListRemovedListener;
     private ShoppingListDialogFragment.OnCompleteListener onCompleteListener;
-    private AppCompatActivity activity;
     private ShoppingListChildEventListener itemsChildEventListener;
     private ValueEventListener valueEventListener;
     private BaseShoppingListAdapter adapter;
     private ShoppingListDialogFragment dialogFragment;
     private boolean isListItemInvolved = false;
+    private User user;
 
-    public ShoppingListViewModel(AppCompatActivity activity, Bundle initData,
+    public ShoppingListViewModel(IShopListsView view, Bundle initData,
                                  ShoppingListDialogFragment.OnCompleteListener onCompleteListener) {
         super();
-        this.activity = activity;
+        this.view = view;
         this.onCompleteListener = onCompleteListener;
         listName = new ObservableField<>();
         ownerName = new ObservableField<>();
         dateLastEditedDate = new ObservableField<>();
         key = initData.getString(Constants.KEY_LIST_ID);
         initDialogFragment();
+        initUser();
     }
 
     public ShoppingListViewModel(ShoppingList shoppingList) {
@@ -49,6 +53,10 @@ public class ShoppingListViewModel extends BaseViewModel {
         listName = new ObservableField<>(shoppingList.getListName());
         ownerName = new ObservableField<>(shoppingList.getOwner());
         dateLastEditedDate = new ObservableField<>(Utils.getFormattedDate(shoppingList.getDateLastChanged()));
+    }
+
+    private void initUser() {
+        user = UserSession.getInstance().getUser(view.getViewContext());
     }
 
     public void onStart() {
@@ -70,7 +78,7 @@ public class ShoppingListViewModel extends BaseViewModel {
 
     public void onCreateNewListItem(String title) {
         ShoppingListItem shoppingListItem = new ShoppingListItem(title);
-        shoppingListItem.setOwner("Anonymous owner");
+        shoppingListItem.setOwner(user.getName());
         databaseReference.child(Constants.ACTIVE_LIST_ITEMS).child(key).push().setValue(shoppingListItem);
     }
 
@@ -82,7 +90,7 @@ public class ShoppingListViewModel extends BaseViewModel {
     }
 
     public void onAddNewItemClicked(View view) {
-        dialogFragment.show(activity.getSupportFragmentManager(), ShoppingListDialogFragment.class.getSimpleName());
+        dialogFragment.show(this.view.getViewActivity().getSupportFragmentManager(), ShoppingListDialogFragment.class.getSimpleName());
     }
 
     public void removeShoppingList() {
