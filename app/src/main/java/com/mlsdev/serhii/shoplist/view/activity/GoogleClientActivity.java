@@ -21,7 +21,14 @@ public abstract class GoogleClientActivity extends BaseActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        viewModel.initListeners();
         viewModel.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        viewModel.onStop();
     }
 
     @Override

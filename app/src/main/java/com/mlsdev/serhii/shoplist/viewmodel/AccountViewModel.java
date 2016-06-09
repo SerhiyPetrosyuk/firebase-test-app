@@ -29,6 +29,8 @@ import com.mlsdev.serhii.shoplist.utils.Utils;
 import com.mlsdev.serhii.shoplist.view.activity.CreateAccountActivity;
 import com.mlsdev.serhii.shoplist.view.activity.GoogleClientActivity;
 import com.mlsdev.serhii.shoplist.view.activity.IAuthenticationView;
+import com.mlsdev.serhii.shoplist.view.activity.IBaseView;
+import com.mlsdev.serhii.shoplist.view.activity.ILogOutView;
 import com.mlsdev.serhii.shoplist.view.activity.MainActivity;
 import com.mlsdev.serhii.shoplist.view.activity.SignInActivity;
 
@@ -40,10 +42,12 @@ import static com.mlsdev.serhii.shoplist.utils.Constants.USER;
 public class AccountViewModel extends BaseViewModel implements GoogleApiClient.OnConnectionFailedListener {
     private static final String TAG = "AccountViewModel";
     private IAuthenticationView authenticationView;
+    private ILogOutView logOutView;
+    private IBaseView baseView;
     private FirebaseAuth.AuthStateListener authStateListener;
-    public final ObservableField<String> userName;
-    public final ObservableField<String> userEmail;
-    public final ObservableField<String> userPassword;
+    public final ObservableField<String> userName = new ObservableField<>();
+    public final ObservableField<String> userEmail = new ObservableField<>();
+    public final ObservableField<String> userPassword = new ObservableField<>();
     protected GoogleApiClient googleApiClient;
     protected GoogleSignInResult signInResult;
     protected GoogleSignInAccount signInAccount;
@@ -53,17 +57,25 @@ public class AccountViewModel extends BaseViewModel implements GoogleApiClient.O
     public AccountViewModel(IAuthenticationView authenticationView) {
         super();
         this.authenticationView = authenticationView;
-        auth = FirebaseAuth.getInstance();
-        userName = new ObservableField<>("");
-        userEmail = new ObservableField<>("");
-        userPassword = new ObservableField<>("");
+        baseView = authenticationView;
+        init(authenticationView);
+    }
 
+    public AccountViewModel(ILogOutView logOutView) {
+        super();
+        this.logOutView = logOutView;
+        baseView = logOutView;
+        init(logOutView);
+    }
+
+    private void init(IBaseView view) {
+        auth = FirebaseAuth.getInstance();
         GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(authenticationView.getViewActivity().getString(R.string.default_web_client_id))
+                .requestIdToken(view.getViewActivity().getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
-        googleApiClient = new GoogleApiClient.Builder(authenticationView.getViewActivity())
-                .enableAutoManage(authenticationView.getViewActivity(), this)
+        googleApiClient = new GoogleApiClient.Builder(view.getViewActivity())
+                .enableAutoManage(view.getViewActivity(), this)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, googleSignInOptions)
                 .build();
     }
@@ -71,9 +83,6 @@ public class AccountViewModel extends BaseViewModel implements GoogleApiClient.O
     @Override
     public void onStart() {
         super.onStart();
-        initListeners();
-        auth.addAuthStateListener(authStateListener);
-
         OptionalPendingResult<GoogleSignInResult> pendingResult = Auth.GoogleSignInApi.silentSignIn(googleApiClient);
         if (pendingResult.isDone()) {
             // If the user's cached credentials are valid, the OptionalPendingResult will be "done"
@@ -112,14 +121,14 @@ public class AccountViewModel extends BaseViewModel implements GoogleApiClient.O
 
     public void onCreateButtonClicked(View view) {
         User user = new User(userEmail.get(), userName.get(), Utils.getCurrentDateTime());
-        UserSession.getInstance().saveUserData(authenticationView.getViewActivity(), user.toJson());
-        authenticationView.hideKeyboard();
+        UserSession.getInstance().saveUserData(baseView.getViewActivity(), user.toJson());
+        baseView.hideKeyboard();
         auth.createUserWithEmailAndPassword(userEmail.get(), userPassword.get())
                 .addOnCompleteListener(onCompleteListener);
     }
 
     public void onSignIpButtonClicked(View view) {
-        authenticationView.hideKeyboard();
+        baseView.hideKeyboard();
         auth.signInWithEmailAndPassword(userEmail.get(), userPassword.get())
                 .addOnCompleteListener(onCompleteListener);
     }
@@ -132,43 +141,48 @@ public class AccountViewModel extends BaseViewModel implements GoogleApiClient.O
         Log.d(TAG, "firebaseAuthWithGoogle: " + account.getIdToken());
 
         User user = new User(account.getEmail(), account.getDisplayName(), Utils.getCurrentDateTime());
-        UserSession.getInstance().saveUserData(authenticationView.getViewActivity(), user.toJson());
+        UserSession.getInstance().saveUserData(baseView.getViewActivity(), user.toJson());
 
         AuthCredential authCredential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
         auth.signInWithCredential(authCredential).addOnCompleteListener(onCompleteListener);
     }
 
     public void onShowCreateAccountScreen(View view) {
-        authenticationView.getViewActivity().startActivity(
-                new Intent(authenticationView.getViewActivity(), CreateAccountActivity.class));
-        authenticationView.getViewActivity().finish();
+        baseView.getViewActivity().startActivity(
+                new Intent(baseView.getViewActivity(), CreateAccountActivity.class));
+        baseView.getViewActivity().finish();
     }
 
     public void onShowSignInScreen(View view) {
-        authenticationView.getViewActivity().startActivity(
-                new Intent(authenticationView.getViewActivity(), SignInActivity.class));
-        authenticationView.getViewActivity().finish();
+        baseView.getViewActivity().startActivity(
+                new Intent(baseView.getViewActivity(), SignInActivity.class));
+        baseView.getViewActivity().finish();
     }
 
-    private void initListeners() {
+    public void logUserOut() {
+        Auth.GoogleSignInApi.signOut(googleApiClient);
+        auth.signOut();
+    }
+
+    public void initListeners() {
         onCompleteListener = new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (!task.isSuccessful()) {
-                    authenticationView.showMessage(null, task.getException().getMessage());
+                    baseView.showMessage(null, task.getException().getMessage());
                 } else {
-                    User user = UserSession.getInstance().getUser(authenticationView.getViewActivity());
+                    User user = UserSession.getInstance().getUser(baseView.getViewActivity());
 
                     if (user != null) {
                         databaseReference.child(USER).child(Utils.encodeEmail(user.getEmail())).setValue(user);
                     }
 
                     FirebaseUser firebaseUser = task.getResult().getUser();
-                    UserSession.getInstance().openSession(authenticationView.getViewActivity(),
+                    UserSession.getInstance().openSession(baseView.getViewActivity(),
                             firebaseUser.getUid(), Utils.getCurrentDateTime());
-                    authenticationView.getViewActivity().startActivity(
-                            new Intent(authenticationView.getViewActivity(), MainActivity.class));
-                    authenticationView.getViewActivity().finish();
+                    baseView.getViewActivity().startActivity(
+                            new Intent(baseView.getViewActivity(), MainActivity.class));
+                    baseView.getViewActivity().finish();
                 }
             }
         };
@@ -183,9 +197,15 @@ public class AccountViewModel extends BaseViewModel implements GoogleApiClient.O
                 } else {
                     // User is signed out
                     Log.d(TAG, "onAuthStateChanged:signed_out");
+                    if (logOutView != null) {
+                        UserSession.getInstance().onSessionClosed(logOutView.getViewActivity());
+                        logOutView.userLoggedOut();
+                    }
                 }
             }
         };
+
+        auth.addAuthStateListener(authStateListener);
     }
 
     public void updateFields(@Nullable String name, String email, String password) {
@@ -207,7 +227,7 @@ public class AccountViewModel extends BaseViewModel implements GoogleApiClient.O
     // [START signIn]
     private void signIn() {
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
-        authenticationView.getViewActivity().startActivityForResult(signInIntent, GoogleClientActivity.RC_SIGN_IN);
+        baseView.getViewActivity().startActivityForResult(signInIntent, GoogleClientActivity.RC_SIGN_IN);
     }
     // [END signIn]
 

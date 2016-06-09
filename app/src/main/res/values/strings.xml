@@ -11,6 +11,7 @@
     <string name="last_changed_label">last changed at&#160;</string>
     <string name="edit_menu_item_label">Edit</string>
     <string name="remove_menu_item">remove</string>
+    <string name="log_out_menu_item">log out</string>
     <string name="message_removing">Are you sure you want to remove this item?</string>
     <string name="dialog_title_remove">Remove shopping list</string>
 

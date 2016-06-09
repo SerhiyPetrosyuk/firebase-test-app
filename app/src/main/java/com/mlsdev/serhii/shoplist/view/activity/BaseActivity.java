@@ -16,7 +16,7 @@ import com.mlsdev.serhii.shoplist.R;
 /**
  * Created by serhii on 4/29/16.
  */
-public class BaseActivity extends AppCompatActivity {
+public class BaseActivity extends AppCompatActivity implements IBaseView {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -46,7 +46,8 @@ public class BaseActivity extends AppCompatActivity {
         }
     }
 
-    protected void showMessage(@Nullable String title, String message) {
+    @Override
+    public void showMessage(@Nullable String title, String message) {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this, R.style.CustomTheme_Dialog);
         dialogBuilder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
             @Override
@@ -59,11 +60,21 @@ public class BaseActivity extends AppCompatActivity {
         dialogBuilder.create().show();
     }
 
+    @Override
+    public AppCompatActivity getViewActivity() {
+        return this;
+    }
+
     protected void hideSoftKeyboard() {
         View focusedView = this.getCurrentFocus();
         if (focusedView != null) {
             InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             inputMethodManager.hideSoftInputFromWindow(focusedView.getWindowToken(), 0);
         }
+    }
+
+    @Override
+    public void hideKeyboard() {
+        hideSoftKeyboard();
     }
 }

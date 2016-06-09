@@ -13,7 +13,8 @@ public abstract class BaseViewModel {
     }
 
     public void onDestroy() {
-
+        if (databaseReference != null)
+            databaseReference.onDisconnect();
     }
 
     public void onStart() {

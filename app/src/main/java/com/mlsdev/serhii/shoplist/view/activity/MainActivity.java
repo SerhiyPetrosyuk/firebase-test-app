@@ -1,11 +1,14 @@
 package com.mlsdev.serhii.shoplist.view.activity;
 
+import android.content.Intent;
 import android.databinding.BaseObservable;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.mlsdev.serhii.shoplist.R;
@@ -15,12 +18,14 @@ import com.mlsdev.serhii.shoplist.view.fragment.BaseFragment;
 import com.mlsdev.serhii.shoplist.view.fragment.MealListsFragment;
 import com.mlsdev.serhii.shoplist.view.fragment.ShopListsFragment;
 import com.mlsdev.serhii.shoplist.view.fragment.ShoppingListDialogFragment;
+import com.mlsdev.serhii.shoplist.viewmodel.AccountViewModel;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements ILogOutView {
     public static final int SHOP_LISTS_FRAGMENT = 0;
     public static final int MEAL_LISTS_FRAGMENT = 1;
     private ActivityMainBinding binding;
     private PageAdapter pageAdapter;
+    private AccountViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +34,43 @@ public class MainActivity extends BaseActivity {
         binding.setViewModel(new ViewModel());
         initViewPager();
         initToolBar(false);
+        viewModel = new AccountViewModel(this);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        viewModel.initListeners();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        viewModel.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        viewModel.onDestroy();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_activity_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.log_out_menu_item:
+                viewModel.logUserOut();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     private void initViewPager() {
@@ -36,6 +78,13 @@ public class MainActivity extends BaseActivity {
         binding.pager.setAdapter(pageAdapter);
         binding.pager.setOffscreenPageLimit(2);
         binding.tabBar.setupWithViewPager(binding.pager);
+    }
+
+    @Override
+    public void userLoggedOut() {
+        Intent startSignInIntent = new Intent(this, SignInActivity.class);
+        startActivity(startSignInIntent);
+        finish();
     }
 
     public class PageAdapter extends FragmentStatePagerAdapter {

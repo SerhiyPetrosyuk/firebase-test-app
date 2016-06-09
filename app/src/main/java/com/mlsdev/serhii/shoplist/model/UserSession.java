@@ -44,6 +44,15 @@ public class UserSession {
         editor.apply();
     }
 
+    public void onSessionClosed(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove(Constants.SESSION_TOKEN_KEY);
+        editor.remove(Constants.SESSION_EXPIRES_KEY);
+        editor.remove(Constants.USER_MODEL_KEY);
+        editor.apply();
+    }
+
     public void saveUserData(Context context, String json) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = sharedPreferences.edit();

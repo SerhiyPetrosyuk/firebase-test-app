@@ -1,7 +1,6 @@
 package com.mlsdev.serhii.shoplist.view.activity;
 
 import android.databinding.DataBindingUtil;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 
@@ -42,20 +41,5 @@ public class SignInActivity extends GoogleClientActivity implements IAuthenticat
     public void showPasswordError(String errorMessage) {
         binding.tilUserPassword.setErrorEnabled(true);
         binding.tilUserPassword.setError(errorMessage);
-    }
-
-    @Override
-    public void showMessage(String title, String message) {
-        super.showMessage(title, message);
-    }
-
-    @Override
-    public AppCompatActivity getViewActivity() {
-        return this;
-    }
-
-    @Override
-    public void hideKeyboard() {
-        hideSoftKeyboard();
     }
 }

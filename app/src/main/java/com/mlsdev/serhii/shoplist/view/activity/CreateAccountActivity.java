@@ -1,8 +1,6 @@
 package com.mlsdev.serhii.shoplist.view.activity;
 
 import android.databinding.DataBindingUtil;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 
@@ -51,18 +49,4 @@ public class CreateAccountActivity extends GoogleClientActivity implements IAuth
         binding.tilUserPassword.setError(errorMessage);
     }
 
-    @Override
-    public AppCompatActivity getViewActivity() {
-        return this;
-    }
-
-    @Override
-    public void hideKeyboard() {
-        hideSoftKeyboard();
-    }
-
-    @Override
-    public void showMessage(@Nullable String title, String message) {
-        super.showMessage(title, message);
-    }
 }

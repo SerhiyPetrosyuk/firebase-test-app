@@ -15,13 +15,20 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".view.activity.MainActivity"
-            android:configChanges="orientation|keyboard|keyboardHidden|screenSize" />
+            android:configChanges="orientation|keyboard|keyboardHidden|screenSize"
+            android:launchMode="singleInstance" />
+
         <activity
             android:name=".view.activity.ItemDetailsActivity"
             android:configChanges="orientation|keyboard|keyboardHidden|screenSize"
             android:label="" />
-        <activity android:name=".view.activity.CreateAccountActivity" />
-        <activity android:name=".view.activity.SignInActivity" />
+
+        <activity
+            android:name=".view.activity.CreateAccountActivity"
+            android:launchMode="singleInstance" />
+        <activity
+            android:name=".view.activity.SignInActivity"
+            android:launchMode="singleInstance" />
         <activity android:name=".view.activity.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
