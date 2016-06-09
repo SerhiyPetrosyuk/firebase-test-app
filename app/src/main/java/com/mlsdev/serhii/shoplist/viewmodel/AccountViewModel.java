@@ -18,9 +18,12 @@ import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
+import com.mlsdev.serhii.shoplist.R;
 import com.mlsdev.serhii.shoplist.model.UserSession;
 import com.mlsdev.serhii.shoplist.utils.Utils;
 import com.mlsdev.serhii.shoplist.view.activity.CreateAccountActivity;
@@ -53,7 +56,7 @@ public class AccountViewModel extends BaseViewModel implements GoogleApiClient.O
         userPassword = new ObservableField<>("");
 
         GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken("1293212961-m3ehq23qm1timch0aahnvgtc01idrofm.apps.googleusercontent.com")
+                .requestIdToken(authenticationView.getViewActivity().getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
         googleApiClient = new GoogleApiClient.Builder(authenticationView.getViewActivity())
@@ -121,7 +124,10 @@ public class AccountViewModel extends BaseViewModel implements GoogleApiClient.O
     }
 
     private void signInWithGoogleAccount(String oAuthToken) {
+        Log.d(TAG, "firebaseAuthWithGoogle: " + oAuthToken);
 
+        AuthCredential authCredential = GoogleAuthProvider.getCredential(oAuthToken, null);
+        auth.signInWithCredential(authCredential).addOnCompleteListener(onCompleteListener);
     }
 
     public void onShowCreateAccountScreen(View view) {
