@@ -1,17 +1,15 @@
 package com.mlsdev.serhii.shoplist.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.firebase.client.ServerValue;
+import com.google.firebase.database.IgnoreExtraProperties;
+import com.mlsdev.serhii.shoplist.utils.Utils;
 
-import java.util.HashMap;
-import java.util.Map;
-
+@IgnoreExtraProperties
 public class ShoppingList {
     public static final String DATE_KEY = "date";
     private String owner;
     private String listName;
-    private Map<String, Object> dateCreated;
-    private Map<String, Object> dateLastChanged;
+    private long dateCreated;
+    private long dateLastChanged;
 
     public ShoppingList() {
     }
@@ -19,8 +17,7 @@ public class ShoppingList {
     public ShoppingList(String owner, String listName) {
         this.owner = owner;
         this.listName = listName;
-        dateLastChanged = new HashMap<>(1);
-        dateLastChanged.put(DATE_KEY, ServerValue.TIMESTAMP);
+        dateLastChanged = Utils.getCurrentDateTime();
     }
 
     public String getOwner() {
@@ -31,15 +28,13 @@ public class ShoppingList {
         return listName;
     }
 
-    public Map<String, Object> getDateLastChanged() {
+
+    public long getDateLastChanged() {
         return dateLastChanged;
     }
 
-    public Map<String, Object> getDateCreated() {
-        if (dateCreated == null) {
-            dateCreated = new HashMap<>(1);
-            dateCreated.put(DATE_KEY, ServerValue.TIMESTAMP);
-        }
+    public long getDateCreated() {
+        if (dateCreated == 0) dateCreated = Utils.getCurrentDateTime();
         return dateCreated;
     }
 
@@ -51,21 +46,11 @@ public class ShoppingList {
         this.listName = listName;
     }
 
-    public void setDateCreated(Map<String, Object> dateCreated) {
+    public void setDateCreated(long dateCreated) {
         this.dateCreated = dateCreated;
     }
 
-    public void setDateLastChanged(Map<String, Object> dateLastChanged) {
+    public void setDateLastChanged(long dateLastChanged) {
         this.dateLastChanged = dateLastChanged;
-    }
-
-    @JsonIgnore
-    public long getDateLastChangedLong() {
-        return (long) dateLastChanged.get(DATE_KEY);
-    }
-
-    @JsonIgnore
-    public long getDateCreatedLong() {
-        return (long) dateCreated.get(DATE_KEY);
     }
 }

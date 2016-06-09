@@ -2,13 +2,14 @@ package com.mlsdev.serhii.shoplist.viewmodel;
 
 import android.os.Bundle;
 
-import com.firebase.client.Firebase;
-import com.mlsdev.serhii.shoplist.utils.Constants;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public abstract class BaseViewModel {
+    protected DatabaseReference databaseReference;
 
-    protected Firebase getFirebase() {
-        return new Firebase(Constants.FIREBASE_URL);
+    public BaseViewModel() {
+        this.databaseReference = FirebaseDatabase.getInstance().getReference();
     }
 
     public void onDestroy() {

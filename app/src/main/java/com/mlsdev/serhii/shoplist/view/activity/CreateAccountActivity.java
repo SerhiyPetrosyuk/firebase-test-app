@@ -4,15 +4,15 @@ import android.databinding.DataBindingUtil;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 
 import com.mlsdev.serhii.shoplist.R;
 import com.mlsdev.serhii.shoplist.databinding.ActivityCreateAccountBinding;
 import com.mlsdev.serhii.shoplist.view.listener.EditTextWatcher;
 import com.mlsdev.serhii.shoplist.viewmodel.AccountViewModel;
 
-public class CreateAccountActivity extends BaseActivity implements IAuthenticationView {
+public class CreateAccountActivity extends GoogleClientActivity implements IAuthenticationView {
     private ActivityCreateAccountBinding binding;
-    private AccountViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +27,12 @@ public class CreateAccountActivity extends BaseActivity implements IAuthenticati
         binding.etUserName.addTextChangedListener(textWatcher);
         binding.etUserEmail.addTextChangedListener(textWatcher);
         binding.etUserPassword.addTextChangedListener(textWatcher);
+        binding.btnGoogleSignIn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                viewModel.onGoogleSignInClicked(v);
+            }
+        });
     }
 
     @Override

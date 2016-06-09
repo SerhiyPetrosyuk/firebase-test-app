@@ -2,8 +2,8 @@ package com.mlsdev.serhii.shoplist.viewmodel;
 
 import android.content.Context;
 
-import com.firebase.client.DataSnapshot;
-import com.firebase.client.Firebase;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.FirebaseDatabase;
 import com.mlsdev.serhii.shoplist.model.ShoppingList;
 import com.mlsdev.serhii.shoplist.model.listeners.ShoppingListChildEventListener;
 import com.mlsdev.serhii.shoplist.utils.Constants;
@@ -25,11 +25,13 @@ public class ShopListsViewModel extends BaseViewModel {
     }
 
     public void addNewShopList(String title) {
-        getFirebase().child(Constants.ACTIVE_LISTS).push().setValue(new ShoppingList("Anonymous owner", title));
+        ShoppingList shoppingList = new ShoppingList("Anonymous owner", title);
+        FirebaseDatabase.getInstance().getReference().child(Constants.ACTIVE_LISTS)
+                .push()
+                .setValue(shoppingList);
     }
 
     private void initFirebaseListener() {
-        Firebase firebase = getFirebase().child(Constants.ACTIVE_LISTS);
         shoppingListChildEventListener = new ShoppingListChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String key) {
@@ -48,12 +50,13 @@ public class ShopListsViewModel extends BaseViewModel {
 
         };
 
-        firebase.addChildEventListener(shoppingListChildEventListener);
+        FirebaseDatabase.getInstance().getReference().child(Constants.ACTIVE_LISTS)
+                .addChildEventListener(shoppingListChildEventListener);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        getFirebase().removeEventListener(shoppingListChildEventListener);
+        FirebaseDatabase.getInstance().getReference().removeEventListener(shoppingListChildEventListener);
     }
 }

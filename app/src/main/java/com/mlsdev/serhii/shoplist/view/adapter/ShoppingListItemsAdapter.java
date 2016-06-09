@@ -10,7 +10,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.firebase.client.DataSnapshot;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.FirebaseDatabase;
 import com.mlsdev.serhii.shoplist.R;
 import com.mlsdev.serhii.shoplist.databinding.ShoppingListItemBinding;
 import com.mlsdev.serhii.shoplist.model.ShoppingListItem;
@@ -80,14 +81,14 @@ public class ShoppingListItemsAdapter extends BaseShoppingListAdapter<ShoppingLi
             switch (dialogType) {
                 case Constants.DIALOG_TYPE_EDITING_ITEM:
                     shoppingListItem.setTitle(title);
-                    getFirebase()
+                    FirebaseDatabase.getInstance().getReference()
                             .child(Constants.ACTIVE_LIST_ITEMS)
                             .child(getParentKey())
                             .child(shoppingListItem.getKey())
                             .setValue(shoppingListItem);
                     break;
                 case Constants.DIALOG_TYPE_REMOVE_ITEM:
-                    getFirebase()
+                    FirebaseDatabase.getInstance().getReference()
                             .child(Constants.ACTIVE_LIST_ITEMS)
                             .child(getParentKey())
                             .child(shoppingListItem.getKey())

@@ -1,8 +1,9 @@
 package com.mlsdev.serhii.shoplist.model.listeners;
 
-import com.firebase.client.ChildEventListener;
-import com.firebase.client.DataSnapshot;
-import com.firebase.client.FirebaseError;
+
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 
 /**
  * Created by serhii on 5/4/16.
@@ -29,7 +30,7 @@ public abstract class ShoppingListChildEventListener implements ChildEventListen
     }
 
     @Override
-    public void onCancelled(FirebaseError firebaseError) {
+    public void onCancelled(DatabaseError databaseError) {
 
     }
 }

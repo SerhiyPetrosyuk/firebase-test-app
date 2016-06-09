@@ -2,12 +2,12 @@ package com.mlsdev.serhii.shoplist.view.adapter;
 
 import android.support.v7.widget.RecyclerView;
 
-import com.firebase.client.DataSnapshot;
+import com.google.firebase.database.DataSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static android.support.v7.widget.RecyclerView.*;
+import static android.support.v7.widget.RecyclerView.ViewHolder;
 
 /**
  * Created by serhii on 5/4/16.

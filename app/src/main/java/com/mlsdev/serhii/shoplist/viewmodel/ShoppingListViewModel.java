@@ -2,14 +2,13 @@ package com.mlsdev.serhii.shoplist.viewmodel;
 
 import android.databinding.ObservableField;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
-import com.firebase.client.DataSnapshot;
-import com.firebase.client.FirebaseError;
-import com.firebase.client.ServerValue;
-import com.firebase.client.ValueEventListener;
-import com.firebase.client.annotations.Nullable;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 import com.mlsdev.serhii.shoplist.model.ShoppingList;
 import com.mlsdev.serhii.shoplist.model.ShoppingListItem;
 import com.mlsdev.serhii.shoplist.model.listeners.ShoppingListChildEventListener;
@@ -17,9 +16,6 @@ import com.mlsdev.serhii.shoplist.utils.Constants;
 import com.mlsdev.serhii.shoplist.utils.Utils;
 import com.mlsdev.serhii.shoplist.view.adapter.BaseShoppingListAdapter;
 import com.mlsdev.serhii.shoplist.view.fragment.ShoppingListDialogFragment;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class ShoppingListViewModel extends BaseViewModel {
     public final ObservableField<String> listName;
@@ -34,9 +30,11 @@ public class ShoppingListViewModel extends BaseViewModel {
     private ValueEventListener valueEventListener;
     private BaseShoppingListAdapter adapter;
     private ShoppingListDialogFragment dialogFragment;
+    private boolean isListItemInvolved = false;
 
     public ShoppingListViewModel(AppCompatActivity activity, Bundle initData,
                                  ShoppingListDialogFragment.OnCompleteListener onCompleteListener) {
+        super();
         this.activity = activity;
         this.onCompleteListener = onCompleteListener;
         listName = new ObservableField<>();
@@ -47,36 +45,33 @@ public class ShoppingListViewModel extends BaseViewModel {
     }
 
     public ShoppingListViewModel(ShoppingList shoppingList) {
+        super();
         listName = new ObservableField<>(shoppingList.getListName());
         ownerName = new ObservableField<>(shoppingList.getOwner());
-        dateLastEditedDate = new ObservableField<>(Utils.getFormattedDate(shoppingList.getDateLastChangedLong()));
+        dateLastEditedDate = new ObservableField<>(Utils.getFormattedDate(shoppingList.getDateLastChanged()));
     }
 
     public void onStart() {
 
-        if (key == null)
-            return;
-        else
-            adapter.setParentKey(key);
+        if (key == null) return;
+        else adapter.setParentKey(key);
 
         initFirebaseListeners();
-        getFirebase().child(Constants.ACTIVE_LISTS).child(key).addValueEventListener(valueEventListener);
-        getFirebase().child(Constants.ACTIVE_LIST_ITEMS).child(key).addChildEventListener(itemsChildEventListener);
+        databaseReference.child(Constants.ACTIVE_LISTS).child(key).addValueEventListener(valueEventListener);
+        databaseReference.child(Constants.ACTIVE_LIST_ITEMS).child(key).addChildEventListener(itemsChildEventListener);
     }
 
     public void onEditListItem(@Nullable String newTitle) {
-        Map<String, Object> dateLastChanged = new HashMap<>(1);
-        dateLastChanged.put(ShoppingList.DATE_KEY, ServerValue.TIMESTAMP);
-        if (newTitle != null)
-            shoppingList.setListName(newTitle);
-        shoppingList.setDateLastChanged(dateLastChanged);
-        getFirebase().child(Constants.ACTIVE_LISTS).child(key).setValue(shoppingList);
+        if (newTitle != null) shoppingList.setListName(newTitle);
+
+        shoppingList.setDateLastChanged(Utils.getCurrentDateTime());
+        databaseReference.child(Constants.ACTIVE_LISTS).child(key).setValue(shoppingList);
     }
 
     public void onCreateNewListItem(String title) {
         ShoppingListItem shoppingListItem = new ShoppingListItem(title);
         shoppingListItem.setOwner("Anonymous owner");
-        getFirebase().child(Constants.ACTIVE_LIST_ITEMS).child(key).push().setValue(shoppingListItem);
+        databaseReference.child(Constants.ACTIVE_LIST_ITEMS).child(key).push().setValue(shoppingListItem);
     }
 
     private void initDialogFragment() {
@@ -91,11 +86,11 @@ public class ShoppingListViewModel extends BaseViewModel {
     }
 
     public void removeShoppingList() {
-        getFirebase().child(Constants.ACTIVE_LISTS).child(key).removeValue();
+        databaseReference.child(Constants.ACTIVE_LISTS).child(key).removeValue();
     }
 
     public void removeBoundItems() {
-        getFirebase().child(Constants.ACTIVE_LIST_ITEMS).child(key).removeValue();
+        databaseReference.child(Constants.ACTIVE_LIST_ITEMS).child(key).removeValue();
     }
 
     public void setAdapter(BaseShoppingListAdapter adapter) {
@@ -123,11 +118,11 @@ public class ShoppingListViewModel extends BaseViewModel {
                 shoppingList = dataSnapshot.getValue(ShoppingList.class);
                 listName.set(shoppingList.getListName());
                 ownerName.set(shoppingList.getOwner());
-                dateLastEditedDate.set(Utils.getFormattedDate(shoppingList.getDateLastChangedLong()));
+                dateLastEditedDate.set(Utils.getFormattedDate(shoppingList.getDateLastChanged()));
             }
 
             @Override
-            public void onCancelled(FirebaseError firebaseError) {
+            public void onCancelled(DatabaseError firebaseError) {
 
             }
         };
@@ -136,25 +131,30 @@ public class ShoppingListViewModel extends BaseViewModel {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String prevKey) {
                 adapter.addItem(dataSnapshot, prevKey);
-                onEditListItem(null);
+                if (isListItemInvolved) {
+                    isListItemInvolved = false;
+                    onEditListItem(null);
+                }
             }
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
                 adapter.onItemRemoved(dataSnapshot.getKey());
+                onEditListItem(null);
             }
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String key) {
                 adapter.onItemChanged(dataSnapshot);
+                onEditListItem(null);
             }
         };
     }
 
     @Override
     public void onStop() {
-        getFirebase().removeEventListener(itemsChildEventListener);
-        getFirebase().removeEventListener(valueEventListener);
+        databaseReference.removeEventListener(itemsChildEventListener);
+        databaseReference.removeEventListener(valueEventListener);
     }
 
     @Override
@@ -164,11 +164,12 @@ public class ShoppingListViewModel extends BaseViewModel {
 
         String title = resultData.getString(Constants.EXTRA_LIST_ITEM_TITLE);
         switch (dialogType) {
-            case Constants.DIALOG_TYPE_CREATING:
-                onCreateNewListItem(title);
-                break;
             case Constants.DIALOG_TYPE_EDITING:
                 onEditListItem(title);
+                break;
+            case Constants.DIALOG_TYPE_CREATING:
+                onCreateNewListItem(title);
+                isListItemInvolved = true;
                 break;
             case Constants.DIALOG_TYPE_REMOVE:
                 removeShoppingList();
