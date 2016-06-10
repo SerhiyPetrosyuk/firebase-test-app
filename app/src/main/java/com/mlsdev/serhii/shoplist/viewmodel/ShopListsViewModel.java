@@ -29,7 +29,7 @@ public class ShopListsViewModel extends BaseViewModel {
     }
 
     public void addNewShopList(String title) {
-        ShoppingList shoppingList = new ShoppingList(user.getName(), title);
+        ShoppingList shoppingList = new ShoppingList(user.getName(), user.getEmail(), title);
         FirebaseDatabase.getInstance().getReference().child(Constants.ACTIVE_LISTS)
                 .push()
                 .setValue(shoppingList);

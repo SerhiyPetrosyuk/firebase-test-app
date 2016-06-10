@@ -6,7 +6,8 @@ import com.mlsdev.serhii.shoplist.utils.Utils;
 @IgnoreExtraProperties
 public class ShoppingList {
     public static final String DATE_KEY = "date";
-    private String owner;
+    private String ownerName;
+    private String ownerEmail;
     private String listName;
     private long dateCreated;
     private long dateLastChanged;
@@ -14,14 +15,15 @@ public class ShoppingList {
     public ShoppingList() {
     }
 
-    public ShoppingList(String owner, String listName) {
-        this.owner = owner;
+    public ShoppingList(String ownerName, String ownerEmail, String listName) {
+        this.ownerName = ownerName;
+        this.ownerEmail = ownerEmail;
         this.listName = listName;
         dateLastChanged = Utils.getCurrentDateTime();
     }
 
-    public String getOwner() {
-        return owner;
+    public String getOwnerName() {
+        return ownerName;
     }
 
     public String getListName() {
@@ -38,8 +40,12 @@ public class ShoppingList {
         return dateCreated;
     }
 
-    public void setOwner(String owner) {
-        this.owner = owner;
+    public String getOwnerEmail() {
+        return ownerEmail;
+    }
+
+    public void setOwnerName(String ownerName) {
+        this.ownerName = ownerName;
     }
 
     public void setListName(String listName) {
@@ -52,5 +58,9 @@ public class ShoppingList {
 
     public void setDateLastChanged(long dateLastChanged) {
         this.dateLastChanged = dateLastChanged;
+    }
+
+    public void setOwnerEmail(String ownerEmail) {
+        this.ownerEmail = ownerEmail;
     }
 }

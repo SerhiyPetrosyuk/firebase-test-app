@@ -10,4 +10,5 @@ public interface IShopListsView {
     void setTitle(String title);
     Context getViewContext();
     AppCompatActivity getViewActivity();
+    void showEditingButtons(boolean isShow);
 }

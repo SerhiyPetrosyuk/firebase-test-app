@@ -86,4 +86,9 @@ public class ShopListsFragment extends BaseFragment implements IShopListsView,
     public AppCompatActivity getViewActivity() {
         return (AppCompatActivity) getActivity();
     }
+
+    @Override
+    public void showEditingButtons(boolean isShow) {
+
+    }
 }

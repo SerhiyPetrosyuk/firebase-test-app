@@ -22,6 +22,7 @@ public class ItemDetailsActivity extends BaseActivity implements IShopListsView,
         ShoppingListViewModel.OnShoppingListRemovedListener {
     private ItemDetailsBinding binding;
     private ShoppingListViewModel viewModel;
+    private boolean isUserListOwner = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -50,6 +51,13 @@ public class ItemDetailsActivity extends BaseActivity implements IShopListsView,
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.item_details_menu, menu);
+
+        MenuItem removeList = menu.findItem(R.id.remove_menu_item);
+        MenuItem editList = menu.findItem(R.id.edit_menu_item);
+
+        removeList.setVisible(isUserListOwner);
+        editList.setVisible(isUserListOwner);
+
         return true;
     }
 
@@ -109,5 +117,11 @@ public class ItemDetailsActivity extends BaseActivity implements IShopListsView,
     @Override
     public AppCompatActivity getViewActivity() {
         return this;
+    }
+
+    @Override
+    public void showEditingButtons(boolean isShow) {
+        isUserListOwner = isShow;
+        invalidateOptionsMenu();
     }
 }

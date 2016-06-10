@@ -34,4 +34,11 @@ public class Utils {
     public static String encodeEmail(String userEmail) {
         return userEmail.replace(".", ",");
     }
+
+    public static boolean isUserListOwner(String listOwnerEmail, String currentUserEmail) {
+        if (listOwnerEmail == null || currentUserEmail == null)
+            throw new IllegalArgumentException("Neither the list owner's email nor the current user's email " +
+                    "can't be null");
+        return listOwnerEmail.equals(currentUserEmail);
+    }
 }

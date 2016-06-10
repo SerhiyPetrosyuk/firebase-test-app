@@ -51,7 +51,7 @@ public class ShoppingListViewModel extends BaseViewModel {
     public ShoppingListViewModel(ShoppingList shoppingList) {
         super();
         listName = new ObservableField<>(shoppingList.getListName());
-        ownerName = new ObservableField<>(shoppingList.getOwner());
+        ownerName = new ObservableField<>(shoppingList.getOwnerName());
         dateLastEditedDate = new ObservableField<>(Utils.getFormattedDate(shoppingList.getDateLastChanged()));
     }
 
@@ -125,8 +125,9 @@ public class ShoppingListViewModel extends BaseViewModel {
 
                 shoppingList = dataSnapshot.getValue(ShoppingList.class);
                 listName.set(shoppingList.getListName());
-                ownerName.set(shoppingList.getOwner());
+                ownerName.set(shoppingList.getOwnerName());
                 dateLastEditedDate.set(Utils.getFormattedDate(shoppingList.getDateLastChanged()));
+                view.showEditingButtons(Utils.isUserListOwner(shoppingList.getOwnerEmail(), user.getEmail()));
             }
 
             @Override
