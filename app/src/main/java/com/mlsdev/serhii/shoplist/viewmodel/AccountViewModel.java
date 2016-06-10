@@ -160,7 +160,8 @@ public class AccountViewModel extends BaseViewModel implements GoogleApiClient.O
     }
 
     public void logUserOut() {
-        Auth.GoogleSignInApi.signOut(googleApiClient);
+        if (googleApiClient.isConnected())
+            Auth.GoogleSignInApi.signOut(googleApiClient);
         auth.signOut();
     }
 

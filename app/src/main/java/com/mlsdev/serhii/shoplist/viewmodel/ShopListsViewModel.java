@@ -8,6 +8,7 @@ import com.mlsdev.serhii.shoplist.model.UserSession;
 import com.mlsdev.serhii.shoplist.model.listeners.ShoppingListChildEventListener;
 import com.mlsdev.serhii.shoplist.utils.Constants;
 import com.mlsdev.serhii.shoplist.view.activity.IShopListsView;
+import com.mlsdev.serhii.shoplist.view.activity.MainActivity;
 import com.mlsdev.serhii.shoplist.view.adapter.ShoppingListsAdapter;
 
 public class ShopListsViewModel extends BaseViewModel {
@@ -36,6 +37,11 @@ public class ShopListsViewModel extends BaseViewModel {
 
     private void initUser() {
         user = UserSession.getInstance().getUser(view.getViewContext());
+        if (user == null) {
+            ((MainActivity) view.getViewActivity()).logUserOut();
+            return;
+        }
+
         view.setTitle(user.getName());
     }
 

@@ -20,6 +20,7 @@ public class Utils {
 
     @SuppressLint("SimpleDateFormat")
     public static String getFormattedDate(long time) {
+        time *= 1000;
         SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(time);
@@ -27,7 +28,7 @@ public class Utils {
     }
 
     public static long getCurrentDateTime() {
-        return System.currentTimeMillis();
+        return System.currentTimeMillis() / 1000;
     }
 
     public static String encodeEmail(String userEmail) {

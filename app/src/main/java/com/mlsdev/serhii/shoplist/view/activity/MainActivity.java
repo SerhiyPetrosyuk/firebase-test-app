@@ -66,11 +66,15 @@ public class MainActivity extends BaseActivity implements ILogOutView {
 
         switch (item.getItemId()) {
             case R.id.log_out_menu_item:
-                viewModel.logUserOut();
+                logUserOut();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    public void logUserOut() {
+        viewModel.logUserOut();
     }
 
     private void initViewPager() {
