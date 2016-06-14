@@ -6,6 +6,8 @@ import android.content.Context;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
+import com.mlsdev.serhii.shoplist.model.ItemUser;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
@@ -35,10 +37,17 @@ public class Utils {
         return userEmail.replace(".", ",");
     }
 
-    public static boolean isUserListOwner(String listOwnerEmail, String currentUserEmail) {
+    public static boolean isUserListOrItemOwner(String listOwnerEmail, String currentUserEmail) {
         if (listOwnerEmail == null || currentUserEmail == null)
             throw new IllegalArgumentException("Neither the list owner's email nor the current user's email " +
                     "can't be null");
         return listOwnerEmail.equals(currentUserEmail);
+    }
+
+    public static String getBuyerName(ItemUser currentUser, ItemUser buyer) {
+        if (currentUser == null || buyer == null)
+            throw new IllegalArgumentException("Neither the list owner's email nor the current user's email " +
+                    "can't be null");
+        return isUserListOrItemOwner(currentUser.getEmail(), buyer.getEmail()) ? "You" : buyer.getName();
     }
 }

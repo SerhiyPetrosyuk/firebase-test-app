@@ -8,6 +8,7 @@ import android.view.View;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
+import com.mlsdev.serhii.shoplist.model.ItemUser;
 import com.mlsdev.serhii.shoplist.model.ShoppingList;
 import com.mlsdev.serhii.shoplist.model.ShoppingListItem;
 import com.mlsdev.serhii.shoplist.model.User;
@@ -78,7 +79,8 @@ public class ShoppingListViewModel extends BaseViewModel {
 
     public void onCreateNewListItem(String title) {
         ShoppingListItem shoppingListItem = new ShoppingListItem(title);
-        shoppingListItem.setOwner(user.getName());
+        ItemUser itemUser = new ItemUser(user.getName(), user.getEmail());
+        shoppingListItem.setOwner(itemUser);
         databaseReference.child(Constants.ACTIVE_LIST_ITEMS).child(key).push().setValue(shoppingListItem);
     }
 
@@ -127,7 +129,7 @@ public class ShoppingListViewModel extends BaseViewModel {
                 listName.set(shoppingList.getListName());
                 ownerName.set(shoppingList.getOwnerName());
                 dateLastEditedDate.set(Utils.getFormattedDate(shoppingList.getDateLastChanged()));
-                view.showEditingButtons(Utils.isUserListOwner(shoppingList.getOwnerEmail(), user.getEmail()));
+                view.showEditingButtons(Utils.isUserListOrItemOwner(shoppingList.getOwnerEmail(), user.getEmail()));
             }
 
             @Override

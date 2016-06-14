@@ -14,6 +14,7 @@
     <string name="log_out_menu_item">log out</string>
     <string name="message_removing">Are you sure you want to remove this item?</string>
     <string name="dialog_title_remove">Remove shopping list</string>
+    <string name="bought_by">Bought by %1$s</string>
 
     <!--HINTS-->
     <string name="hint_user_name">Your name</string>

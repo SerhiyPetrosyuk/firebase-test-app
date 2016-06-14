@@ -2,6 +2,7 @@ package com.mlsdev.serhii.shoplist.view.adapter;
 
 import android.databinding.DataBindingUtil;
 import android.databinding.ObservableField;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -9,13 +10,17 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.FirebaseDatabase;
 import com.mlsdev.serhii.shoplist.R;
 import com.mlsdev.serhii.shoplist.databinding.ShoppingListItemBinding;
+import com.mlsdev.serhii.shoplist.model.ItemUser;
 import com.mlsdev.serhii.shoplist.model.ShoppingListItem;
+import com.mlsdev.serhii.shoplist.model.User;
+import com.mlsdev.serhii.shoplist.model.UserSession;
 import com.mlsdev.serhii.shoplist.utils.Constants;
+import com.mlsdev.serhii.shoplist.utils.Utils;
 import com.mlsdev.serhii.shoplist.view.fragment.ShoppingListDialogFragment;
 import com.mlsdev.serhii.shoplist.viewmodel.BaseViewModel;
 
@@ -24,9 +29,11 @@ import com.mlsdev.serhii.shoplist.viewmodel.BaseViewModel;
  */
 public class ShoppingListItemsAdapter extends BaseShoppingListAdapter<ShoppingListItemsAdapter.ViewHolder> {
     private AppCompatActivity activity;
+    private User currentUser;
 
     public ShoppingListItemsAdapter(AppCompatActivity activity) {
         this.activity = activity;
+        currentUser = UserSession.getInstance().getUser(activity);
     }
 
     @Override
@@ -41,15 +48,35 @@ public class ShoppingListItemsAdapter extends BaseShoppingListAdapter<ShoppingLi
         ShoppingListItem shoppingListItem = dataSnapshot.getValue(ShoppingListItem.class);
         shoppingListItem.setKey(dataSnapshot.getKey());
 
+        TextView title = holder.binding.tvListItemTitle;
+
+        holder.binding.tvListItemTitle.setPaintFlags(shoppingListItem.getBought()
+                ? (title.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG)
+                : (title.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG)));
+
+        boolean isUserItemOwner = Utils.isUserListOrItemOwner(
+                shoppingListItem.getOwner().getEmail(),
+                currentUser.getEmail());
+
+        if (shoppingListItem.getBought()) {
+            ItemUser currentItemUser = new ItemUser(currentUser.getName(), currentUser.getEmail());
+            String buyerName = Utils.getBuyerName(currentItemUser, shoppingListItem.getBuyer());
+            holder.binding.tvBoughtByUser.setText(activity.getString(R.string.bought_by, buyerName));
+        }
+
         holder.binding.setViewModel(new ShoppingListItemViewModel(shoppingListItem, position));
+        holder.binding.btnRemoveItem.setVisibility(shoppingListItem.getBought() || !isUserItemOwner
+                ? View.INVISIBLE : View.VISIBLE);
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener,
+            View.OnClickListener {
         private ShoppingListItemBinding binding;
 
         public ViewHolder(View itemView) {
             super(itemView);
             itemView.setOnLongClickListener(this);
+            itemView.setOnClickListener(this);
             binding = DataBindingUtil.bind(itemView);
         }
 
@@ -60,6 +87,11 @@ public class ShoppingListItemsAdapter extends BaseShoppingListAdapter<ShoppingLi
             args.putString(Constants.EXTRA_LIST_ITEM_TITLE, binding.tvListItemTitle.getText().toString());
             createDialog(args, binding.getViewModel());
             return false;
+        }
+
+        @Override
+        public void onClick(View v) {
+            binding.getViewModel().onItemBought(!binding.getViewModel().shoppingListItem.getBought());
         }
     }
 
@@ -81,14 +113,14 @@ public class ShoppingListItemsAdapter extends BaseShoppingListAdapter<ShoppingLi
             switch (dialogType) {
                 case Constants.DIALOG_TYPE_EDITING_ITEM:
                     shoppingListItem.setTitle(title);
-                    FirebaseDatabase.getInstance().getReference()
+                    databaseReference
                             .child(Constants.ACTIVE_LIST_ITEMS)
                             .child(getParentKey())
                             .child(shoppingListItem.getKey())
                             .setValue(shoppingListItem);
                     break;
                 case Constants.DIALOG_TYPE_REMOVE_ITEM:
-                    FirebaseDatabase.getInstance().getReference()
+                    databaseReference
                             .child(Constants.ACTIVE_LIST_ITEMS)
                             .child(getParentKey())
                             .child(shoppingListItem.getKey())
@@ -97,6 +129,23 @@ public class ShoppingListItemsAdapter extends BaseShoppingListAdapter<ShoppingLi
                 default:
                     break;
             }
+        }
+
+        public void onItemBought(boolean isBought) {
+            User currentUser = UserSession.getInstance().getUser(activity);
+            ItemUser buyer = isBought ? new ItemUser(currentUser.getName(), currentUser.getEmail()) : shoppingListItem.getBuyer();
+            boolean isCurrentUserBuyer = Utils.isUserListOrItemOwner(buyer.getEmail(), currentUser.getEmail());
+
+            if (!isBought && !isCurrentUserBuyer)
+                return;
+
+            shoppingListItem.setBought(isBought);
+            if (isBought)
+                shoppingListItem.setBuyer(buyer);
+            databaseReference.child(Constants.ACTIVE_LIST_ITEMS)
+                    .child(getParentKey())
+                    .child(shoppingListItem.getKey())
+                    .setValue(shoppingListItem);
         }
 
         public void onRemoveItemClicked(View view) {
