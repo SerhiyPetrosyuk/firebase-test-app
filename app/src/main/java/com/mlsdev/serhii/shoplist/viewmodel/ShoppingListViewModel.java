@@ -60,16 +60,6 @@ public class ShoppingListViewModel extends BaseViewModel {
         user = UserSession.getInstance().getUser(view.getViewContext());
     }
 
-    public void onStart() {
-
-        if (key == null) return;
-        else adapter.setParentKey(key);
-
-        initFirebaseListeners();
-        databaseReference.child(Constants.ACTIVE_LISTS).child(key).addValueEventListener(valueEventListener);
-        databaseReference.child(Constants.ACTIVE_LIST_ITEMS).child(key).addChildEventListener(itemsChildEventListener);
-    }
-
     public void onEditListItem(@Nullable String newTitle) {
         if (newTitle != null) shoppingList.setListName(newTitle);
 
@@ -105,6 +95,7 @@ public class ShoppingListViewModel extends BaseViewModel {
 
     public void setAdapter(BaseShoppingListAdapter adapter) {
         this.adapter = adapter;
+        initFirebaseListeners();
     }
 
     public interface OnShoppingListRemovedListener {
@@ -160,6 +151,10 @@ public class ShoppingListViewModel extends BaseViewModel {
                 onEditListItem(null);
             }
         };
+
+        adapter.setParentKey(key);
+        databaseReference.child(Constants.ACTIVE_LISTS).child(key).addValueEventListener(valueEventListener);
+        databaseReference.child(Constants.ACTIVE_LIST_ITEMS).child(key).addChildEventListener(itemsChildEventListener);
     }
 
     @Override

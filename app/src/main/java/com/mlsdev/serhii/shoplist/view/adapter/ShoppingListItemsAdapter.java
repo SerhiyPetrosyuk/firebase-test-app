@@ -62,6 +62,10 @@ public class ShoppingListItemsAdapter extends BaseShoppingListAdapter<ShoppingLi
             ItemUser currentItemUser = new ItemUser(currentUser.getName(), currentUser.getEmail());
             String buyerName = Utils.getBuyerName(currentItemUser, shoppingListItem.getBuyer());
             holder.binding.tvBoughtByUser.setText(activity.getString(R.string.bought_by, buyerName));
+            holder.binding.tvBoughtByUser.setVisibility(View.VISIBLE);
+
+        } else {
+            holder.binding.tvBoughtByUser.setVisibility(View.INVISIBLE);
         }
 
         holder.binding.setViewModel(new ShoppingListItemViewModel(shoppingListItem, position));
@@ -140,8 +144,7 @@ public class ShoppingListItemsAdapter extends BaseShoppingListAdapter<ShoppingLi
                 return;
 
             shoppingListItem.setBought(isBought);
-            if (isBought)
-                shoppingListItem.setBuyer(buyer);
+            shoppingListItem.setBuyer(isBought ? buyer : null);
             databaseReference.child(Constants.ACTIVE_LIST_ITEMS)
                     .child(getParentKey())
                     .child(shoppingListItem.getKey())

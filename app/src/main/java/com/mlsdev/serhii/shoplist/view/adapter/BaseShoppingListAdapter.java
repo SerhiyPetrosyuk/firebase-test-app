@@ -72,6 +72,8 @@ public abstract class BaseShoppingListAdapter<T extends ViewHolder> extends Recy
     }
 
     public void setParentKey(String parentKey) {
+        if (parentKey == null)
+            throw new IllegalArgumentException("parentKey can't be null!");
         this.parentKey = parentKey;
     }
 
