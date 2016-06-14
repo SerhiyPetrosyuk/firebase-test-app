@@ -1,5 +1,6 @@
 package com.mlsdev.serhii.shoplist.view.activity;
 
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.view.View;
@@ -34,6 +35,12 @@ public class CreateAccountActivity extends GoogleClientActivity implements IAuth
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+        binding.getViewModel().onStop();
+    }
+
+    @Override
     protected void onDestroy() {
         viewModel.onDestroy();
         super.onDestroy();
@@ -47,6 +54,12 @@ public class CreateAccountActivity extends GoogleClientActivity implements IAuth
     @Override
     public void showPasswordError(String errorMessage) {
         binding.tilUserPassword.setError(errorMessage);
+    }
+
+    @Override
+    public void userAuthenticated() {
+        startActivity(new Intent(this, MainActivity.class));
+        finish();
     }
 
 }

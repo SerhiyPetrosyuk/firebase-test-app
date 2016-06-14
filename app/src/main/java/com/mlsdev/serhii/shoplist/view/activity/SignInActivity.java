@@ -1,5 +1,6 @@
 package com.mlsdev.serhii.shoplist.view.activity;
 
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.view.View;
@@ -32,6 +33,12 @@ public class SignInActivity extends GoogleClientActivity implements IAuthenticat
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+        binding.getViewModel().onStop();
+    }
+
+    @Override
     public void showEmailError(String errorMessage) {
         binding.tilUserEmail.setErrorEnabled(true);
         binding.tilUserEmail.setError(errorMessage);
@@ -41,5 +48,11 @@ public class SignInActivity extends GoogleClientActivity implements IAuthenticat
     public void showPasswordError(String errorMessage) {
         binding.tilUserPassword.setErrorEnabled(true);
         binding.tilUserPassword.setError(errorMessage);
+    }
+
+    @Override
+    public void userAuthenticated() {
+        startActivity(new Intent(this, MainActivity.class));
+        finish();
     }
 }

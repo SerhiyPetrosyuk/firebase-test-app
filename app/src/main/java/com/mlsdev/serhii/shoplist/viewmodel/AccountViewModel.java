@@ -31,7 +31,6 @@ import com.mlsdev.serhii.shoplist.view.activity.GoogleClientActivity;
 import com.mlsdev.serhii.shoplist.view.activity.IAuthenticationView;
 import com.mlsdev.serhii.shoplist.view.activity.IBaseView;
 import com.mlsdev.serhii.shoplist.view.activity.ILogOutView;
-import com.mlsdev.serhii.shoplist.view.activity.MainActivity;
 import com.mlsdev.serhii.shoplist.view.activity.SignInActivity;
 
 import static com.mlsdev.serhii.shoplist.utils.Constants.USER;
@@ -83,6 +82,10 @@ public class AccountViewModel extends BaseViewModel implements GoogleApiClient.O
     @Override
     public void onStart() {
         super.onStart();
+
+        if (UserSession.getInstance().isActive())
+            return;
+
         OptionalPendingResult<GoogleSignInResult> pendingResult = Auth.GoogleSignInApi.silentSignIn(googleApiClient);
         if (pendingResult.isDone()) {
             // If the user's cached credentials are valid, the OptionalPendingResult will be "done"
@@ -109,6 +112,8 @@ public class AccountViewModel extends BaseViewModel implements GoogleApiClient.O
         super.onStop();
         onCompleteListener = null;
         authStateListener = null;
+        baseView = null;
+        logOutView = null;
         googleApiClient.disconnect();
         if (authStateListener != null)
             auth.removeAuthStateListener(authStateListener);
@@ -170,20 +175,18 @@ public class AccountViewModel extends BaseViewModel implements GoogleApiClient.O
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (!task.isSuccessful()) {
-                    baseView.showMessage(null, task.getException().getMessage());
+                    authenticationView.showMessage(null, task.getException().getMessage());
                 } else {
-                    User user = UserSession.getInstance().getUser(baseView.getViewActivity());
+                    User user = UserSession.getInstance().getUser(authenticationView.getViewActivity());
 
                     if (user != null) {
                         databaseReference.child(USER).child(Utils.encodeEmail(user.getEmail())).setValue(user);
                     }
 
                     FirebaseUser firebaseUser = task.getResult().getUser();
-                    UserSession.getInstance().openSession(baseView.getViewActivity(),
+                    UserSession.getInstance().openSession(authenticationView.getViewActivity(),
                             firebaseUser.getUid(), Utils.getCurrentDateTime());
-                    baseView.getViewActivity().startActivity(
-                            new Intent(baseView.getViewActivity(), MainActivity.class));
-                    baseView.getViewActivity().finish();
+                    authenticationView.userAuthenticated();
                 }
             }
         };

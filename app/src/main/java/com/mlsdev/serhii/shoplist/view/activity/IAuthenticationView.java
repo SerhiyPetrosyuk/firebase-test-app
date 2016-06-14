@@ -6,4 +6,5 @@ package com.mlsdev.serhii.shoplist.view.activity;
 public interface IAuthenticationView extends IBaseView {
     void showEmailError(String errorMessage);
     void showPasswordError(String errorMessage);
+    void userAuthenticated();
 }
