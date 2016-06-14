@@ -22,6 +22,9 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 import com.mlsdev.serhii.shoplist.R;
 import com.mlsdev.serhii.shoplist.model.User;
 import com.mlsdev.serhii.shoplist.model.UserSession;
@@ -52,6 +55,7 @@ public class AccountViewModel extends BaseViewModel implements GoogleApiClient.O
     protected GoogleSignInAccount signInAccount;
     private FirebaseAuth auth;
     private OnCompleteListener<AuthResult> onCompleteListener;
+    private ValueEventListener getUserEventListener;
 
     public AccountViewModel(IAuthenticationView authenticationView) {
         super();
@@ -82,6 +86,7 @@ public class AccountViewModel extends BaseViewModel implements GoogleApiClient.O
     @Override
     public void onStart() {
         super.onStart();
+        initListeners();
 
         if (UserSession.getInstance().isActive())
             return;
@@ -112,16 +117,18 @@ public class AccountViewModel extends BaseViewModel implements GoogleApiClient.O
         super.onStop();
         onCompleteListener = null;
         authStateListener = null;
-        baseView = null;
-        logOutView = null;
-        googleApiClient.disconnect();
-        if (authStateListener != null)
-            auth.removeAuthStateListener(authStateListener);
     }
+
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+        baseView = null;
+        logOutView = null;
+        googleApiClient.disconnect();
+        databaseReference.removeEventListener(getUserEventListener);
+        if (authStateListener != null)
+            auth.removeAuthStateListener(authStateListener);
     }
 
     public void onCreateButtonClicked(View view) {
@@ -179,14 +186,19 @@ public class AccountViewModel extends BaseViewModel implements GoogleApiClient.O
                 } else {
                     User user = UserSession.getInstance().getUser(authenticationView.getViewActivity());
 
-                    if (user != null) {
+                    if (user != null)
                         databaseReference.child(USER).child(Utils.encodeEmail(user.getEmail())).setValue(user);
-                    }
 
                     FirebaseUser firebaseUser = task.getResult().getUser();
                     UserSession.getInstance().openSession(authenticationView.getViewActivity(),
                             firebaseUser.getUid(), Utils.getCurrentDateTime());
-                    authenticationView.userAuthenticated();
+
+                    if (user == null) {
+                        databaseReference.child(USER).child(Utils.encodeEmail(firebaseUser.getEmail()))
+                                .addValueEventListener(getUserEventListener);
+                    } else {
+                        authenticationView.userAuthenticated();
+                    }
                 }
             }
         };
@@ -206,6 +218,20 @@ public class AccountViewModel extends BaseViewModel implements GoogleApiClient.O
                         logOutView.userLoggedOut();
                     }
                 }
+            }
+        };
+
+        getUserEventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                User user = dataSnapshot.getValue(User.class);
+                UserSession.getInstance().saveUserData(authenticationView.getViewActivity(), user.toJson());
+                authenticationView.userAuthenticated();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                baseView.showMessage(null, databaseError.getMessage());
             }
         };
 

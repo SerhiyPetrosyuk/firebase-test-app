@@ -4,6 +4,7 @@ import android.databinding.ObservableField;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
+import android.widget.CompoundButton;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -20,7 +21,7 @@ import com.mlsdev.serhii.shoplist.view.activity.IShopListsView;
 import com.mlsdev.serhii.shoplist.view.adapter.BaseShoppingListAdapter;
 import com.mlsdev.serhii.shoplist.view.fragment.ShoppingListDialogFragment;
 
-public class ShoppingListViewModel extends BaseViewModel {
+public class ShoppingListViewModel extends BaseViewModel implements CompoundButton.OnCheckedChangeListener {
     public final ObservableField<String> listName;
     public final ObservableField<String> ownerName;
     public final ObservableField<String> dateLastEditedDate;
@@ -96,6 +97,11 @@ public class ShoppingListViewModel extends BaseViewModel {
     public void setAdapter(BaseShoppingListAdapter adapter) {
         this.adapter = adapter;
         initFirebaseListeners();
+    }
+
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
     }
 
     public interface OnShoppingListRemovedListener {

@@ -33,6 +33,7 @@ public class ItemDetailsActivity extends BaseActivity implements IShopListsView,
         viewModel = new ShoppingListViewModel(this, args, this);
         viewModel.setOnShoppingListRemovedListener(this);
         binding.setViewModel(viewModel);
+        binding.switchShoppingMode.setOnCheckedChangeListener(viewModel);
         initRecyclerView();
     }
 

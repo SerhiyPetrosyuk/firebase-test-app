@@ -40,19 +40,19 @@ public class MainActivity extends BaseActivity implements ILogOutView {
     @Override
     protected void onStart() {
         super.onStart();
-        viewModel.initListeners();
+        viewModel.onStart();
     }
 
     @Override
     protected void onStop() {
-        super.onStop();
         viewModel.onStop();
+        super.onStop();
     }
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         viewModel.onDestroy();
+        super.onDestroy();
     }
 
     @Override
@@ -75,6 +75,7 @@ public class MainActivity extends BaseActivity implements ILogOutView {
 
     public void logUserOut() {
         viewModel.logUserOut();
+        finish();
     }
 
     private void initViewPager() {

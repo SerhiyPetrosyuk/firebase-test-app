@@ -64,8 +64,7 @@ public class ShopListsViewModel extends BaseViewModel {
 
         };
 
-        FirebaseDatabase.getInstance().getReference().child(Constants.ACTIVE_LISTS)
-                .addChildEventListener(shoppingListChildEventListener);
+        databaseReference.child(Constants.ACTIVE_LISTS).addChildEventListener(shoppingListChildEventListener);
     }
 
     @Override
