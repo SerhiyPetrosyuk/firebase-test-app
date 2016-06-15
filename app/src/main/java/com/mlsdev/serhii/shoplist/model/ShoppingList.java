@@ -3,14 +3,17 @@ package com.mlsdev.serhii.shoplist.model;
 import com.google.firebase.database.IgnoreExtraProperties;
 import com.mlsdev.serhii.shoplist.utils.Utils;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @IgnoreExtraProperties
 public class ShoppingList {
-    public static final String DATE_KEY = "date";
     private String ownerName;
     private String ownerEmail;
     private String listName;
     private long dateCreated;
     private long dateLastChanged;
+    private List<String> usersInShop = new ArrayList<>();
 
     public ShoppingList() {
     }
@@ -44,6 +47,10 @@ public class ShoppingList {
         return ownerEmail;
     }
 
+    public List<String> getUsersInShop() {
+        return usersInShop;
+    }
+
     public void setOwnerName(String ownerName) {
         this.ownerName = ownerName;
     }
@@ -62,5 +69,17 @@ public class ShoppingList {
 
     public void setOwnerEmail(String ownerEmail) {
         this.ownerEmail = ownerEmail;
+    }
+
+    public void setUsersInShop(List<String> usersInShop) {
+        this.usersInShop = usersInShop;
+    }
+
+    public void addUserToShop(String usersEmail) {
+        usersInShop.add(usersEmail);
+    }
+
+    public void removeUserFromShop(String userEmail) {
+        usersInShop.remove(userEmail);
     }
 }

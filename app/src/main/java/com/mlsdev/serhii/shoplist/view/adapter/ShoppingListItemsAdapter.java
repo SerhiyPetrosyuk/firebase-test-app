@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.mlsdev.serhii.shoplist.R;
@@ -95,7 +96,10 @@ public class ShoppingListItemsAdapter extends BaseShoppingListAdapter<ShoppingLi
 
         @Override
         public void onClick(View v) {
-            binding.getViewModel().onItemBought(!binding.getViewModel().shoppingListItem.getBought());
+            if (isShoppingModeEnabled)
+                binding.getViewModel().onItemBought(!binding.getViewModel().shoppingListItem.getBought());
+            else
+                Toast.makeText(activity, "Please enable the shopping mode", Toast.LENGTH_SHORT).show();
         }
     }
 

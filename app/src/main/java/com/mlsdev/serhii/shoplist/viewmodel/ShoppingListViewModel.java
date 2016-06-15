@@ -25,6 +25,7 @@ public class ShoppingListViewModel extends BaseViewModel implements CompoundButt
     public final ObservableField<String> listName;
     public final ObservableField<String> ownerName;
     public final ObservableField<String> dateLastEditedDate;
+    public final ObservableField<Boolean> isUserInShop;
     private IShopListsView view;
     private String key;
     private ShoppingList shoppingList;
@@ -45,6 +46,7 @@ public class ShoppingListViewModel extends BaseViewModel implements CompoundButt
         listName = new ObservableField<>();
         ownerName = new ObservableField<>();
         dateLastEditedDate = new ObservableField<>();
+        isUserInShop = new ObservableField<>(false);
         key = initData.getString(Constants.KEY_LIST_ID);
         initDialogFragment();
         initUser();
@@ -55,6 +57,7 @@ public class ShoppingListViewModel extends BaseViewModel implements CompoundButt
         listName = new ObservableField<>(shoppingList.getListName());
         ownerName = new ObservableField<>(shoppingList.getOwnerName());
         dateLastEditedDate = new ObservableField<>(Utils.getFormattedDate(shoppingList.getDateLastChanged()));
+        isUserInShop = new ObservableField<>(false);
     }
 
     private void initUser() {
@@ -101,7 +104,17 @@ public class ShoppingListViewModel extends BaseViewModel implements CompoundButt
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        adapter.changeShoppingModeState(isChecked);
 
+        if (Utils.isUserInShop(shoppingList.getUsersInShop(), user.getEmail()) && isChecked)
+            return;
+
+        if (isChecked)
+            shoppingList.addUserToShop(user.getEmail());
+        else
+            shoppingList.removeUserFromShop(user.getEmail());
+
+        databaseReference.child(Constants.ACTIVE_LISTS).child(key).setValue(shoppingList);
     }
 
     public interface OnShoppingListRemovedListener {
@@ -125,6 +138,10 @@ public class ShoppingListViewModel extends BaseViewModel implements CompoundButt
                 shoppingList = dataSnapshot.getValue(ShoppingList.class);
                 listName.set(shoppingList.getListName());
                 ownerName.set(shoppingList.getOwnerName());
+                if (user != null) {
+                    boolean userInShop = Utils.isUserInShop(shoppingList.getUsersInShop(), user.getEmail());
+                    isUserInShop.set(userInShop);
+                }
                 dateLastEditedDate.set(Utils.getFormattedDate(shoppingList.getDateLastChanged()));
                 view.showEditingButtons(Utils.isUserListOrItemOwner(shoppingList.getOwnerEmail(), user.getEmail()));
             }

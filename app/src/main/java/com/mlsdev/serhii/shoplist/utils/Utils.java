@@ -10,6 +10,7 @@ import com.mlsdev.serhii.shoplist.model.ItemUser;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.List;
 
 public class Utils {
 
@@ -49,5 +50,17 @@ public class Utils {
             throw new IllegalArgumentException("Neither the list owner's email nor the current user's email " +
                     "can't be null");
         return isUserListOrItemOwner(currentUser.getEmail(), buyer.getEmail()) ? "You" : buyer.getName();
+    }
+
+    public static boolean isUserInShop(List<String> usersInShop, String currentUserEmail) {
+        if (usersInShop == null || currentUserEmail == null)
+            throw new IllegalArgumentException("Neither the list user's email nor the current user's email " +
+                    "can't be null");
+
+        for (String userInShopEmail : usersInShop)
+            if (currentUserEmail.equals(userInShopEmail))
+                return true;
+
+        return false;
     }
 }

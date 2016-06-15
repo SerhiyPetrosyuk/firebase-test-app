@@ -10,6 +10,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by serhii on 6/10/16.
  */
@@ -23,22 +26,26 @@ public class UtilsTest {
     private static long inputDate;
     private static ItemUser itemOwner;
     private static ItemUser itemBuyer;
+    private static List<String> usersInShop;
+    private static String correctEmail = "petrosyuk@mlsdev.com";
 
     @BeforeClass
     public static void setUp() {
-        userIsListOwner = new User("petrosyuk@mlsdev.com", "Serhii", 0);
+        userIsListOwner = new User(correctEmail, "Serhii", 0);
         userIsNotListOwner = new User("mlsdev@mlsdev.com", "MLSDev", 0);
         shoppingList = new ShoppingList(userIsListOwner.getName(), userIsListOwner.getEmail(), "List name");
         expectedDateResult = "10:42";
         inputDate = 1465544578;
         itemOwner = new ItemUser("Serhii", "petrosyuk@mlsdev.com");
         itemBuyer = new ItemUser("MLSDev", "mlsdev@mlsdev.com");
+        usersInShop = new ArrayList<>();
     }
 
     @Before
     public void setUpEmails() {
         expectedEmailResult = "petrosiuk@gmail,com";
         inputEmail = "petrosiuk@gmail.com";
+        usersInShop.add(correctEmail);
     }
 
     @Test
@@ -96,4 +103,20 @@ public class UtilsTest {
         Utils.getBuyerName(null, null);
     }
 
+    @Test
+    public void isUserInShop_CorrectDataTest() {
+        boolean actualResult = Utils.isUserInShop(usersInShop, correctEmail);
+        Assert.assertTrue(actualResult);
+    }
+
+    @Test
+    public void isUserInShop_CorrectDataUserIsNotInShopTest() {
+        boolean actualResult = Utils.isUserInShop(usersInShop, "test@test.com");
+        Assert.assertFalse(actualResult);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void isUserInShop_IncorrectDataTest() {
+        Utils.isUserInShop(null, "test@test.com");
+    }
 }

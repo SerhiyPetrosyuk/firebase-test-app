@@ -16,6 +16,7 @@ public abstract class BaseShoppingListAdapter<T extends ViewHolder> extends Recy
     protected List<DataSnapshot> dataSnapshots = new ArrayList<>();
     protected OnItemClickListener onItemClickListener;
     protected String parentKey;
+    protected boolean isShoppingModeEnabled;
 
     @Override
     public int getItemCount() {
@@ -79,5 +80,9 @@ public abstract class BaseShoppingListAdapter<T extends ViewHolder> extends Recy
 
     public String getParentKey() {
         return parentKey;
+    }
+
+    public void changeShoppingModeState(boolean state) {
+        isShoppingModeEnabled = state;
     }
 }
