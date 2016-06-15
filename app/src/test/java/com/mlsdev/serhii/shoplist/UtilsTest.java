@@ -26,7 +26,7 @@ public class UtilsTest {
     private static long inputDate;
     private static ItemUser itemOwner;
     private static ItemUser itemBuyer;
-    private static List<String> usersInShop;
+    private static List<ItemUser> usersInShop;
     private static String correctEmail = "petrosyuk@mlsdev.com";
 
     @BeforeClass
@@ -45,7 +45,7 @@ public class UtilsTest {
     public void setUpEmails() {
         expectedEmailResult = "petrosiuk@gmail,com";
         inputEmail = "petrosiuk@gmail.com";
-        usersInShop.add(correctEmail);
+        usersInShop.add(itemBuyer);
     }
 
     @Test
@@ -105,7 +105,7 @@ public class UtilsTest {
 
     @Test
     public void isUserInShop_CorrectDataTest() {
-        boolean actualResult = Utils.isUserInShop(usersInShop, correctEmail);
+        boolean actualResult = Utils.isUserInShop(usersInShop, itemBuyer.getEmail());
         Assert.assertTrue(actualResult);
     }
 

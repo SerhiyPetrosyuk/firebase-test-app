@@ -52,13 +52,13 @@ public class Utils {
         return isUserListOrItemOwner(currentUser.getEmail(), buyer.getEmail()) ? "You" : buyer.getName();
     }
 
-    public static boolean isUserInShop(List<String> usersInShop, String currentUserEmail) {
+    public static boolean isUserInShop(List<ItemUser> usersInShop, String currentUserEmail) {
         if (usersInShop == null || currentUserEmail == null)
             throw new IllegalArgumentException("Neither the list user's email nor the current user's email " +
                     "can't be null");
 
-        for (String userInShopEmail : usersInShop)
-            if (currentUserEmail.equals(userInShopEmail))
+        for (ItemUser userInShop : usersInShop)
+            if (currentUserEmail.equals(userInShop.getEmail()))
                 return true;
 
         return false;

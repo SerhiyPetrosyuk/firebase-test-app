@@ -13,7 +13,7 @@ public class ShoppingList {
     private String listName;
     private long dateCreated;
     private long dateLastChanged;
-    private List<String> usersInShop = new ArrayList<>();
+    private List<ItemUser> usersInShop = new ArrayList<>();
 
     public ShoppingList() {
     }
@@ -47,7 +47,7 @@ public class ShoppingList {
         return ownerEmail;
     }
 
-    public List<String> getUsersInShop() {
+    public List<ItemUser> getUsersInShop() {
         return usersInShop;
     }
 
@@ -71,15 +71,54 @@ public class ShoppingList {
         this.ownerEmail = ownerEmail;
     }
 
-    public void setUsersInShop(List<String> usersInShop) {
+    public void setUsersInShop(List<ItemUser> usersInShop) {
         this.usersInShop = usersInShop;
     }
 
-    public void addUserToShop(String usersEmail) {
-        usersInShop.add(usersEmail);
+    public void addUserToShop(String usersEmail, String userName) {
+        for (ItemUser user : usersInShop)
+            if (user.getEmail().equals(usersEmail))
+                return;
+
+        ItemUser shopper = new ItemUser(userName, usersEmail);
+        usersInShop.add(shopper);
     }
 
     public void removeUserFromShop(String userEmail) {
-        usersInShop.remove(userEmail);
+        for (ItemUser user : usersInShop)
+            if (user.getEmail().equals(userEmail)) {
+                usersInShop.remove(user);
+                break;
+            }
+    }
+
+    public String getShoppers(String currentUserEmail) {
+        String shoppers = "";
+        boolean isCurrentUserShopper = Utils.isUserInShop(usersInShop, currentUserEmail);
+
+        if (usersInShop.size() == 1 && !isCurrentUserShopper) {
+            shoppers += usersInShop.get(0).getName() + " is shopping";
+        } else if (usersInShop.size() == 2 && !isCurrentUserShopper) {
+            shoppers += usersInShop.get(0).getName() + " and " + usersInShop.get(1).getName() + " are shopping";
+        } else if (usersInShop.size() == 2 && isCurrentUserShopper) {
+            for (ItemUser user : usersInShop)
+                if (!user.getEmail().equals(currentUserEmail)) {
+                    shoppers += user.getName() + " is shopping";
+                    break;
+                }
+        } else if ((usersInShop.size() > 2 && !isCurrentUserShopper) || (usersInShop.size() > 3 && isCurrentUserShopper)) {
+            shoppers += "More than two users are shopping";
+        } else if (usersInShop.size() == 3 && isCurrentUserShopper) {
+            List<ItemUser> shopperList = new ArrayList<>();
+            shopperList.addAll(usersInShop);
+            for (ItemUser user : shopperList)
+                if (user.getEmail().equals(currentUserEmail)) {
+                    shopperList.remove(user);
+                    break;
+                }
+            shoppers += shopperList.get(0).getName() + " and " + shopperList.get(1).getName() + " are shopping";
+        }
+
+        return shoppers;
     }
 }

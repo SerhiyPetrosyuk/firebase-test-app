@@ -26,6 +26,7 @@ public class ShoppingListViewModel extends BaseViewModel implements CompoundButt
     public final ObservableField<String> ownerName;
     public final ObservableField<String> dateLastEditedDate;
     public final ObservableField<Boolean> isUserInShop;
+    public final ObservableField<String> usersInShop;
     private IShopListsView view;
     private String key;
     private ShoppingList shoppingList;
@@ -47,6 +48,7 @@ public class ShoppingListViewModel extends BaseViewModel implements CompoundButt
         ownerName = new ObservableField<>();
         dateLastEditedDate = new ObservableField<>();
         isUserInShop = new ObservableField<>(false);
+        usersInShop = new ObservableField<>();
         key = initData.getString(Constants.KEY_LIST_ID);
         initDialogFragment();
         initUser();
@@ -58,6 +60,7 @@ public class ShoppingListViewModel extends BaseViewModel implements CompoundButt
         ownerName = new ObservableField<>(shoppingList.getOwnerName());
         dateLastEditedDate = new ObservableField<>(Utils.getFormattedDate(shoppingList.getDateLastChanged()));
         isUserInShop = new ObservableField<>(false);
+        usersInShop = new ObservableField<>();
     }
 
     private void initUser() {
@@ -110,7 +113,7 @@ public class ShoppingListViewModel extends BaseViewModel implements CompoundButt
             return;
 
         if (isChecked)
-            shoppingList.addUserToShop(user.getEmail());
+            shoppingList.addUserToShop(user.getEmail(), user.getName());
         else
             shoppingList.removeUserFromShop(user.getEmail());
 
@@ -136,14 +139,7 @@ public class ShoppingListViewModel extends BaseViewModel implements CompoundButt
                 }
 
                 shoppingList = dataSnapshot.getValue(ShoppingList.class);
-                listName.set(shoppingList.getListName());
-                ownerName.set(shoppingList.getOwnerName());
-                if (user != null) {
-                    boolean userInShop = Utils.isUserInShop(shoppingList.getUsersInShop(), user.getEmail());
-                    isUserInShop.set(userInShop);
-                }
-                dateLastEditedDate.set(Utils.getFormattedDate(shoppingList.getDateLastChanged()));
-                view.showEditingButtons(Utils.isUserListOrItemOwner(shoppingList.getOwnerEmail(), user.getEmail()));
+                initShoppingList();
             }
 
             @Override
@@ -178,6 +174,23 @@ public class ShoppingListViewModel extends BaseViewModel implements CompoundButt
         adapter.setParentKey(key);
         databaseReference.child(Constants.ACTIVE_LISTS).child(key).addValueEventListener(valueEventListener);
         databaseReference.child(Constants.ACTIVE_LIST_ITEMS).child(key).addChildEventListener(itemsChildEventListener);
+    }
+
+    private void initShoppingList() {
+        listName.set(shoppingList.getListName());
+        ownerName.set(shoppingList.getOwnerName());
+        if (user != null) {
+            boolean userInShop = Utils.isUserInShop(shoppingList.getUsersInShop(), user.getEmail());
+            isUserInShop.set(userInShop);
+        }
+        dateLastEditedDate.set(Utils.getFormattedDate(shoppingList.getDateLastChanged()));
+        view.showEditingButtons(Utils.isUserListOrItemOwner(shoppingList.getOwnerEmail(), user.getEmail()));
+        updatedShoppersList();
+    }
+
+    private void updatedShoppersList() {
+        String shoppers = shoppingList.getShoppers(user.getEmail());
+        usersInShop.set(shoppers);
     }
 
     @Override

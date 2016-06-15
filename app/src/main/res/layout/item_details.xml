@@ -44,7 +44,7 @@
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="2.75"
+                        android:layout_weight="2.5"
                         android:gravity="center"
                         android:text="@string/i_do_shopping" />
 
@@ -52,7 +52,7 @@
                         android:id="@+id/switch_shopping_mode"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1.25"
+                        android:layout_weight="1.5"
                         android:checked="@{viewModel.isUserInShop}"
                         android:gravity="center" />
                 </LinearLayout>
@@ -78,18 +78,26 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/tv_created_by_label"
-                    android:layout_toLeftOf="@+id/tv_last_edited_date"
-                    android:layout_toStartOf="@id/tv_last_edited_date"
                     android:text="@string/last_changed_label" />
 
                 <android.support.v7.widget.AppCompatTextView
-                    android:id="@id/tv_last_edited_date"
+                    android:id="@+id/tv_last_edited_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/tv_created_by_label"
+                    android:layout_toEndOf="@+id/tv_last_edited_label"
+                    android:layout_toRightOf="@+id/tv_last_edited_label"
+                    android:text="@{viewModel.dateLastEditedDate}" />
+
+                <android.support.v7.widget.AppCompatTextView
+                    android:id="@+id/tv_users_in_shop"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
-                    android:layout_below="@id/tv_created_by_label"
-                    android:text="@{viewModel.dateLastEditedDate}" />
+                    android:layout_below="@id/ll_title_wrapper"
+                    android:text="@{viewModel.usersInShop}"
+                    android:maxWidth="175dp" />
             </RelativeLayout>
 
             <android.support.v7.widget.RecyclerView
