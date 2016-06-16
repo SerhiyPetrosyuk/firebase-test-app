@@ -27,6 +27,7 @@ public class ShoppingListViewModel extends BaseViewModel implements CompoundButt
     public final ObservableField<String> dateLastEditedDate;
     public final ObservableField<Boolean> isUserInShop;
     public final ObservableField<String> usersInShop;
+    public final ObservableField<String> shoppersNumber;
     private IShopListsView view;
     private String key;
     private ShoppingList shoppingList;
@@ -49,6 +50,7 @@ public class ShoppingListViewModel extends BaseViewModel implements CompoundButt
         dateLastEditedDate = new ObservableField<>();
         isUserInShop = new ObservableField<>(false);
         usersInShop = new ObservableField<>();
+        shoppersNumber = new ObservableField<>();
         key = initData.getString(Constants.KEY_LIST_ID);
         initDialogFragment();
         initUser();
@@ -61,6 +63,7 @@ public class ShoppingListViewModel extends BaseViewModel implements CompoundButt
         dateLastEditedDate = new ObservableField<>(Utils.getFormattedDate(shoppingList.getDateLastChanged()));
         isUserInShop = new ObservableField<>(false);
         usersInShop = new ObservableField<>();
+        shoppersNumber = new ObservableField<>();
     }
 
     private void initUser() {

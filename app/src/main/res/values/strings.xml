@@ -16,6 +16,8 @@
     <string name="dialog_title_remove">Remove shopping list</string>
     <string name="bought_by">Bought by %1$s</string>
     <string name="i_do_shopping">I\'m doing shopping</string>
+    <string name="one_shopper">%1$s shopper</string>
+    <string name="more_than_one_shopper">%1$s shoppers</string>
 
     <!--HINTS-->
     <string name="hint_user_name">Your name</string>

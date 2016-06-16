@@ -41,7 +41,7 @@ public class ShopListsFragment extends BaseFragment implements IShopListsView,
     }
 
     private void initList() {
-        ShoppingListsAdapter adapter = new ShoppingListsAdapter();
+        ShoppingListsAdapter adapter = new ShoppingListsAdapter(getActivity());
         adapter.setOnItemClickListener(this);
         viewModel = ShopListsViewModel.getNewInstance(this, adapter);
         binding.rvShopLists.setAdapter(adapter);
